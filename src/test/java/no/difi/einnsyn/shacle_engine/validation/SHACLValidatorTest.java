@@ -39,11 +39,11 @@ public class SHACLValidatorTest {
 
 
     @Test
-    public void validateSimpleViolation() throws Exception {
+    public void validateSimpleViolationMin() throws Exception {
 
         SHACLValidator shaclValidator = new SHACLValidator();
 
-        String dir = "simpleShacleViolation";
+        String dir = "simpleShacleViolationMin";
 
         assertFalse(shaclValidator.validate(
             getShacle(dir),
@@ -98,6 +98,21 @@ public class SHACLValidatorTest {
 
     }
 
+
+    @Test
+    public void simpleShaclePassBasedOnClass() throws Exception {
+
+        SHACLValidator shaclValidator = new SHACLValidator();
+
+        String dir = "simpleShaclePassBasedOnClass";
+
+        assertTrue(shaclValidator.validate(
+            getShacle(dir),
+            getData(dir),
+            ()->{}
+        ));
+
+    }
     private Repository getData(String simpleShacleViolation) throws IOException {
         InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(simpleShacleViolation + "/data.ttl");
 

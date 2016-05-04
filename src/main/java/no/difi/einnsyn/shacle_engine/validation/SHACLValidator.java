@@ -69,14 +69,6 @@ public class SHACLValidator {
     }
 
 
-    private static void parseShapePropertyConstraints(Repository shacleRules, Repository data) throws IOException {
-
-
-
-
-    }
-
-
     private static List<MemValue> getAllShapePredicates(RepositoryConnection connection) {
 
         List<MemValue> predicates = new ArrayList<>();
