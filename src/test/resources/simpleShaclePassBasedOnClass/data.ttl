@@ -4,5 +4,5 @@
 
 <http://example.org/1>
     a arkiv:SomethingElse ;
-    arkiv:tittle "1", "2".
+    arkiv:tittel "1", "2".
 

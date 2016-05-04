@@ -4,5 +4,5 @@
 
 <http://example.org/1>
     a arkiv:Journalpost ;
-    arkiv:tittle "a", "b".
+    arkiv:tittel "a", "b".
 

@@ -7,7 +7,6 @@
 arkiv:JournalpostsShape
 	a sh:Shape ;
 	sh:scopeClass arkiv:Journalpost ;
-
 	sh:property [
 		sh:predicate arkiv:tittel ;
 		sh:maxCount 1 ;
