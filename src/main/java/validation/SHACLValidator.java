@@ -1,10 +1,14 @@
 package validation;
 
+import org.openrdf.model.IRI;
+import org.openrdf.model.Model;
+import org.openrdf.model.Statement;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.query.QueryResults;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.sail.memory.model.*;
 import utils.Property;
 import utils.SHACLEngineUtils;
 import vocabulary.SHACL;
