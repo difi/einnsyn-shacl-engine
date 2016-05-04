@@ -68,6 +68,36 @@ public class SHACLValidatorTest {
 
     }
 
+    @Test
+    public void validateSimpleViolationMax5() throws Exception {
+
+        SHACLValidator shaclValidator = new SHACLValidator();
+
+        String dir = "simpleShacleViolationMax5";
+
+        assertFalse(shaclValidator.validate(
+            getShacle(dir),
+            getData(dir),
+            ()->{}
+        ));
+
+    }
+
+    @Test
+    public void validateSimplePassMax5() throws Exception {
+
+        SHACLValidator shaclValidator = new SHACLValidator();
+
+        String dir = "simpleShaclePassMax5";
+
+        assertTrue(shaclValidator.validate(
+            getShacle(dir),
+            getData(dir),
+            ()->{}
+        ));
+
+    }
+
     private Repository getData(String simpleShacleViolation) throws IOException {
         InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(simpleShacleViolation + "/data.ttl");
 
