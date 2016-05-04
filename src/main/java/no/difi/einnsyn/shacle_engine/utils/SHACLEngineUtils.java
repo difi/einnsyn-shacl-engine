@@ -1,4 +1,4 @@
-package utils;
+package no.difi.einnsyn.shacle_engine.utils;
 
 import org.openrdf.model.IRI;
 import org.openrdf.model.Model;
@@ -16,7 +16,7 @@ import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.StatementCollector;
 import org.openrdf.sail.memory.MemoryStore;
 import org.openrdf.sail.memory.model.MemStatementList;
-import vocabulary.SHACL;
+import no.difi.einnsyn.shacle_engine.vocabulary.SHACL;
 
 import java.io.IOException;
 import java.io.InputStream;

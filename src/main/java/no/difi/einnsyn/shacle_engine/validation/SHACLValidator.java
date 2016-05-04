@@ -1,19 +1,22 @@
-package validation;
+package no.difi.einnsyn.shacle_engine.validation;
 
+import no.difi.einnsyn.shacle_engine.utils.ConstraintViolationHandler;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.query.QueryResults;
+import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.sail.memory.model.*;
-import utils.Property;
-import utils.SHACLEngineUtils;
-import vocabulary.SHACL;
+import no.difi.einnsyn.shacle_engine.utils.Property;
+import no.difi.einnsyn.shacle_engine.utils.SHACLEngineUtils;
+import no.difi.einnsyn.shacle_engine.vocabulary.SHACL;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,35 +28,52 @@ import java.util.stream.Collectors;
  */
 public class SHACLValidator {
 
-    static List<String> violations = new ArrayList<>();
+     List<String> violations = new ArrayList<>();
 
-    public static void parseShapePropertyConstraints(String shapesGraphLocation, String dataGraphLocation) throws IOException {
 
-        RepositoryConnection shapesConnection = SHACLEngineUtils.parseRDFGraph(shapesGraphLocation, RDFFormat.TURTLE);
-        RepositoryConnection dataConnection = SHACLEngineUtils.parseRDFGraph(dataGraphLocation, RDFFormat.TURTLE);
+    public boolean validate(Repository shacleRules, Repository data, ConstraintViolationHandler constraintViolationHandler){
 
-        List<MemValue> shapePredicates = getAllShapePredicates(shapesConnection);
+        if(shacleRules == null || data == null){
+            return false;
+        }
 
-        RepositoryResult<Statement> shapesResult = dataConnection.getStatements(null, null, null);
-        Model dataGraphModel = QueryResults.asModel(shapesResult);
+        try(RepositoryConnection shapesConnection = shacleRules.getConnection()){
+            try(RepositoryConnection dataConnection = data.getConnection()){
 
-        // TODO: This forEach checks whether the data graph is containing all predicates as the shape.
-        // TODO: That is not necessarily the point. Check on scopeClass instead.
-        dataGraphModel.forEach(dataStatement -> {
-            if (!shapePredicates.contains(dataStatement.getPredicate())) {
-                violations.add(dataStatement.getPredicate().toString());
+                List<MemValue> shapePredicates = getAllShapePredicates(shapesConnection);
+
+                RepositoryResult<Statement> shapesResult = dataConnection.getStatements(null, null, null);
+                Model dataGraphModel = QueryResults.asModel(shapesResult);
+
+                // TODO: This forEach checks whether the data graph is containing all predicates as the shape.
+                // TODO: That is not necessarily the point. Check on scopeClass instead.
+                dataGraphModel.forEach(dataStatement -> {
+                    if (!shapePredicates.contains(dataStatement.getPredicate())) {
+                        violations.add(dataStatement.getPredicate().toString());
+                    }
+                });
+
+                parseShapePropertyConstraints(shapesConnection, dataGraphModel);
+
+                if (violations.isEmpty()) {
+                    return true;
+                }
+                else {
+                   return false;
+//                    violations.forEach(System.out::println);
+                }
             }
-        });
-
-        parseShapePropertyConstraints(shapesConnection, dataGraphModel);
-
-        if (violations.isEmpty()) {
-            System.out.println("No violations detected. Nice work!");
         }
-        else {
-            System.out.println("** Violations detected! **\n");
-            violations.forEach(System.out::println);
-        }
+
+
+    }
+
+
+    private static void parseShapePropertyConstraints(Repository shacleRules, Repository data) throws IOException {
+
+
+
+
     }
 
 
@@ -88,7 +108,7 @@ public class SHACLValidator {
         return predicates;
     }
 
-    private static void parseShapePropertyConstraints(RepositoryConnection shapesConnection, Model dataGraphModel) {
+    private void parseShapePropertyConstraints(RepositoryConnection shapesConnection, Model dataGraphModel) {
 
         Model shapesModel = SHACLEngineUtils.repositoryConnectionToModel(shapesConnection);
 
@@ -111,7 +131,7 @@ public class SHACLValidator {
      * @param properties List of property constaints from SHACL validation shape
      * @param dataGraphModel The data graph to be validated
      */
-    private static void validateDataGraph(List<Property> properties, Model dataGraphModel) {
+    private void validateDataGraph(List<Property> properties, Model dataGraphModel) {
 
         // Validate sh:minCount
         for (Statement s : dataGraphModel) {

@@ -1,4 +1,4 @@
-package vocabulary;
+package no.difi.einnsyn.shacle_engine.vocabulary;
 
 import org.openrdf.model.IRI;
 import org.openrdf.model.ValueFactory;
