@@ -41,9 +41,17 @@ public class Shape {
 
         Optional<Boolean> reduce = Iterations.stream(statements)
 
+            .map(statement ->
+                Iterations
+                    .stream(dataConnection.getStatements(statement.getSubject(), null, null))
+                    .collect(Collectors.toList())
+            )
+
             // validate every property in the propertyList (constraint list)
             .map(statement -> propertyList.stream()
-                .map(property -> property.validate(statement.getSubject(), dataConnection, constraintViolationHandler))
+                .map(property -> property.validate(statement, constraintViolationHandler))
+
+               // .map(property -> property.validate(statement.getSubject(), dataConnection, constraintViolationHandler))
                 .reduce((b1, b2) -> b1 && b2))
 
             // filter, map and reduce to get the result

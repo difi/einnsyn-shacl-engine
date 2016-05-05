@@ -71,4 +71,20 @@ public class Property {
             ", maxCount=" + maxCount +
             '}';
     }
+
+    public boolean validate(List<Statement> list, ConstraintViolationHandler constraintViolationHandler) {
+
+        long count = list.stream().filter(statement -> statement.getPredicate().equals(predicate)).count();
+
+
+        if(maxCount != null){
+            if (maxCount < count) return false;
+        }
+
+        if(minCount != null){
+            if (minCount > count) return false;
+        }
+
+        return true;
+    }
 }
