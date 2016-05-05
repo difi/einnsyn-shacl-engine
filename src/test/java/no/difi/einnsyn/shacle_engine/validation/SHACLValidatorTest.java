@@ -120,7 +120,7 @@ public class SHACLValidatorTest {
     }
 
     private Repository getShacle(String simpleShacleViolation) throws IOException {
-        InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(simpleShacleViolation + "/shacle.ttl");
+        InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(simpleShacleViolation + "/shacl.ttl");
 
         return SesameUtils.streamToRepository(resourceAsStream, RDFFormat.TURTLE);
     }
