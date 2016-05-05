@@ -75,11 +75,17 @@ public class Property {
         long count = list.stream()
 
             .filter(statement -> statement.getPredicate().equals(predicate))
+
             .map(statement -> {
                 if (datatype != null) {
-                    if (!((SimpleLiteral) statement.getObject()).getDatatype().equals(datatype)) {
+                    if(statement.getObject() instanceof  SimpleLiteral){
+                        if (!((SimpleLiteral) statement.getObject()).getDatatype().equals(datatype)) {
+                            datatypeViolation[0] = true;
+                        }
+                    }else {
                         datatypeViolation[0] = true;
                     }
+
                 }
                 return statement;
             })
