@@ -12,6 +12,7 @@ import org.openrdf.repository.RepositoryResult;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by havardottestad on 04/05/16.
@@ -41,15 +42,11 @@ public class Shape {
         Optional<Boolean> reduce = Iterations.stream(statements)
 
             // get list of statements for each instance of the class
-            .map(statement -> {
-                RepositoryResult<Statement> statements1 = dataConnection.getStatements(statement.getSubject(), null, null);
-
-                List<Statement> listOfStatements = new ArrayList<>();
-                while (statements1.hasNext()) {
-                    listOfStatements.add(statements1.next());
-                }
-                return listOfStatements;
-            })
+            .map(statement ->
+                Iterations
+                    .stream(dataConnection.getStatements(statement.getSubject(), null, null))
+                    .collect(Collectors.toList())
+            )
 
             // validate every property in the propertyList (constraint list)
             // by running the validate method with each list of statements for the instance
