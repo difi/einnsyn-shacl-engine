@@ -10,6 +10,5 @@ arkiv:JournalpostsShape
 
 	sh:property [
 		sh:predicate arkiv:tittel ;
-		sh:minCount 1 ;
-		sh:severity sh:Violation ;
+		sh:datatype xsd:string ;
 	] .

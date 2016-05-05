@@ -3,5 +3,6 @@
 @prefix arkiv: <http://www.arkivverket.no/standarder/noark5/arkivstruktur/> .
 
 <http://example.org/1>
-    a arkiv:Journalpost .
+    a arkiv:Journalpost ;
+    arkiv:tittel ""@en.
 

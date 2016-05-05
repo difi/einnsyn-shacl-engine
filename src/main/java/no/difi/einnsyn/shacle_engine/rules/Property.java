@@ -17,6 +17,7 @@ import java.util.List;
  */
 public class Property {
 
+    private IRI datatype;
     private IRI predicate;
     private Integer minCount;
     private Integer maxCount;
@@ -27,12 +28,16 @@ public class Property {
 
         RepositoryResult<Statement> statements = shapes.getStatements(object, null, null);
         Iterations.stream(statements).forEach(statement -> {
-            if(statement.getPredicate().equals(SHACL.minCount)){
-                minCount = ((SimpleLiteral)statement.getObject()).intValue();
+            if (statement.getPredicate().equals(SHACL.minCount)) {
+                minCount = ((SimpleLiteral) statement.getObject()).intValue();
             }
 
-            if(statement.getPredicate().equals(SHACL.maxCount)){
-                maxCount = ((SimpleLiteral)statement.getObject()).intValue();
+            if (statement.getPredicate().equals(SHACL.maxCount)) {
+                maxCount = ((SimpleLiteral) statement.getObject()).intValue();
+            }
+
+            if (statement.getPredicate().equals(SHACL.datatype)) {
+                datatype = ((IRI) statement.getObject());
             }
         });
 
@@ -40,28 +45,64 @@ public class Property {
     }
 
 
+//    boolean validate(Resource subject, RepositoryConnection dataConnection, ConstraintViolationHandler constraintViolationHandler) {
+//
+//
+//        long count = Iterations
+//            .stream(dataConnection.getStatements(subject, predicate, null))
+//            .count();
+//
+//
+//        if(maxCount != null){
+//            if (maxCount < count) return false;
+//        }
+//
+//        if(minCount != null){
+//            if (minCount > count) return false;
+//        }
+//
+//        return true;
+//
+//    }
 
 
-    boolean validate(Resource subject, RepositoryConnection dataConnection, ConstraintViolationHandler constraintViolationHandler) {
+    public boolean validate(List<Statement> list, ConstraintViolationHandler constraintViolationHandler) {
 
+        boolean pass = true;
 
-        long count = Iterations
-            .stream(dataConnection.getStatements(subject, predicate, null))
+        final boolean[] datatypeViolation = {false};
+
+        long count = list.stream()
+
+            .filter(statement -> statement.getPredicate().equals(predicate))
+            .map(statement -> {
+                if (datatype != null) {
+                    if (!((SimpleLiteral) statement.getObject()).getDatatype().equals(datatype)) {
+                        datatypeViolation[0] = true;
+                    }
+                }
+                return statement;
+            })
             .count();
 
-
-        if(maxCount != null){
-            if (maxCount < count) return false;
+        if (datatypeViolation[0]) {
+            pass = false;
         }
 
-        if(minCount != null){
-            if (minCount > count) return false;
+        if (maxCount != null) {
+            if (maxCount < count) {
+                pass = false;
+            }
         }
 
-        return true;
+        if (minCount != null) {
+            if (minCount > count) {
+                pass = false;
+            }
+        }
 
+        return pass;
     }
-
 
     @Override
     public String toString() {
@@ -70,21 +111,5 @@ public class Property {
             ", minCount=" + minCount +
             ", maxCount=" + maxCount +
             '}';
-    }
-
-    public boolean validate(List<Statement> list, ConstraintViolationHandler constraintViolationHandler) {
-
-        long count = list.stream().filter(statement -> statement.getPredicate().equals(predicate)).count();
-
-
-        if(maxCount != null){
-            if (maxCount < count) return false;
-        }
-
-        if(minCount != null){
-            if (minCount > count) return false;
-        }
-
-        return true;
     }
 }
