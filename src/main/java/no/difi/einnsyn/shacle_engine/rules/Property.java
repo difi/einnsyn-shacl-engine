@@ -17,11 +17,11 @@ import java.util.List;
  */
 public class Property {
 
-    IRI predicate;
-    Integer minCount;
-    Integer maxCount;
+    private IRI predicate;
+    private Integer minCount;
+    private Integer maxCount;
 
-    public Property(Resource object, RepositoryConnection shapes) {
+    Property(Resource object, RepositoryConnection shapes) {
 
         predicate = (IRI) shapes.getStatements(object, SHACL.predicate, null).next().getObject();
 
@@ -39,9 +39,16 @@ public class Property {
 
     }
 
-    public boolean validate(List<Statement> listOfStatements, ConstraintViolationHandler constraintViolationHandler) {
 
-        long count = listOfStatements.stream().filter(statement -> statement.getPredicate().equals(predicate)).count();
+
+
+    boolean validate(Resource subject, RepositoryConnection dataConnection, ConstraintViolationHandler constraintViolationHandler) {
+
+
+        long count = Iterations
+            .stream(dataConnection.getStatements(subject, predicate, null))
+            .count();
+
 
         if(maxCount != null){
             if (maxCount < count) return false;
@@ -53,8 +60,8 @@ public class Property {
 
         return true;
 
-
     }
+
 
     @Override
     public String toString() {

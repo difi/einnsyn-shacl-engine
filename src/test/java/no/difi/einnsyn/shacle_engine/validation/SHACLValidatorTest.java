@@ -113,6 +113,23 @@ public class SHACLValidatorTest {
         ));
 
     }
+
+
+    @Test
+    public void simpleShacleViolationMinBig() throws Exception {
+
+        SHACLValidator shaclValidator = new SHACLValidator();
+
+        String dir = "simpleShacleViolationMinBig";
+
+        assertTrue(shaclValidator.validate(
+            getShacle(dir),
+            getData(dir),
+            ()->{}
+        ));
+
+    }
+
     private Repository getData(String simpleShacleViolation) throws IOException {
         InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(simpleShacleViolation + "/data.ttl");
 
