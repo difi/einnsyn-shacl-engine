@@ -1,10 +1,10 @@
 package no.difi.einnsyn.shacle_engine.validation;
 
+import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.shacle_engine.rules.Shape;
 import no.difi.einnsyn.shacle_engine.utils.ConstraintViolationHandler;
 import no.difi.einnsyn.shacle_engine.utils.Property;
 import no.difi.einnsyn.shacle_engine.utils.SHACLEngineUtils;
-import no.difi.einnsyn.shacle_engine.vocabulary.SHACL;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
@@ -44,10 +44,10 @@ public class SHACLValidator {
                 Optional<Boolean> reduce = QueryResults.stream(statements)
                     .map(statement -> new Shape(statement.getSubject(), shapesConnection))
                     .map(shape -> shape.validate(dataConnection, constraintViolationHandler))
-                    .reduce((b1, b2) -> (b1 && b2));
+                    .reduce((b1, b2) -> b1 && b2);
 
-                if (reduce.isPresent() && !reduce.get()) {
-                    return false;
+                if (reduce.isPresent()) {
+                    return reduce.get();
                 }
 
                 return true;

@@ -1,7 +1,8 @@
 package no.difi.einnsyn.shacle_engine.rules;
 
+import info.aduna.iteration.Iterations;
+import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.shacle_engine.utils.ConstraintViolationHandler;
-import no.difi.einnsyn.shacle_engine.vocabulary.SHACL;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -25,29 +26,22 @@ public class Property {
         predicate = (IRI) shapes.getStatements(object, SHACL.predicate, null).next().getObject();
 
         RepositoryResult<Statement> statements = shapes.getStatements(object, null, null);
-
-        while(statements.hasNext()){
-            Statement next = statements.next();
-            if(next.getPredicate().equals(SHACL.minCount)){
-                minCount = ((SimpleLiteral)next.getObject()).intValue();
+        Iterations.stream(statements).forEach(statement -> {
+            if(statement.getPredicate().equals(SHACL.minCount)){
+                minCount = ((SimpleLiteral)statement.getObject()).intValue();
             }
 
-            if(next.getPredicate().equals(SHACL.maxCount)){
-                maxCount = ((SimpleLiteral)next.getObject()).intValue();
+            if(statement.getPredicate().equals(SHACL.maxCount)){
+                maxCount = ((SimpleLiteral)statement.getObject()).intValue();
             }
-        }
+        });
+
 
     }
 
     public boolean validate(List<Statement> listOfStatements, ConstraintViolationHandler constraintViolationHandler) {
-        listOfStatements.stream().forEach(s -> System.out.println(s));
 
         long count = listOfStatements.stream().filter(statement -> statement.getPredicate().equals(predicate)).count();
-
-        System.out.println(this);
-        System.out.println(count);
-
-        System.out.println();
 
         if(maxCount != null){
             if (maxCount < count) return false;

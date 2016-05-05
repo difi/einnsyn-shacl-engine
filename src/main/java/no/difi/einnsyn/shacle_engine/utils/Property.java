@@ -1,8 +1,8 @@
 package no.difi.einnsyn.shacle_engine.utils;
 
+import no.difi.einnsyn.SHACL;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Value;
-import no.difi.einnsyn.shacle_engine.vocabulary.SHACL;
 
 import java.util.Map;
 
