@@ -1,11 +1,10 @@
-package no.difi.einnsyn.shacle_engine.utils;
+package no.difi.einnsyn.shacle_engine.violations;
 
 /**
  * Created by havardottestad on 04/05/16.
  */
 public interface ConstraintViolationHandler {
 
-    public void handle();
-
+    void handle(ConstraintViolation violation);
 
 }

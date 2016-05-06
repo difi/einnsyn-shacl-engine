@@ -2,7 +2,7 @@ package no.difi.einnsyn.shacle_engine.rules;
 
 import info.aduna.iteration.Iterations;
 import no.difi.einnsyn.SHACL;
-import no.difi.einnsyn.shacle_engine.utils.ConstraintViolationHandler;
+import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationHandler;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;

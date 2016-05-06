@@ -8,7 +8,8 @@ import org.openrdf.rio.RDFFormat;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by havardottestad on 04/05/16.
@@ -32,7 +33,8 @@ public class SHACLValidatorTest {
         assertTrue("Empty rules set and empty data should validate", shaclValidator.validate(
             SesameUtils.stringToRepository("", RDFFormat.TURTLE),
             SesameUtils.stringToRepository("", RDFFormat.TURTLE),
-            ()->{}
+            violation -> {
+            }
         ));
 
     }
@@ -48,7 +50,8 @@ public class SHACLValidatorTest {
         assertFalse(shaclValidator.validate(
             getShacle(dir),
             getData(dir),
-            ()->{}
+            violation -> {
+            }
         ));
 
     }
@@ -63,7 +66,8 @@ public class SHACLValidatorTest {
         assertFalse(shaclValidator.validate(
             getShacle(dir),
             getData(dir),
-            ()->{}
+            violation -> {
+            }
         ));
 
     }
@@ -78,7 +82,8 @@ public class SHACLValidatorTest {
         assertFalse(shaclValidator.validate(
             getShacle(dir),
             getData(dir),
-            ()->{}
+            violation -> {
+            }
         ));
 
     }
@@ -93,7 +98,8 @@ public class SHACLValidatorTest {
         assertTrue(shaclValidator.validate(
             getShacle(dir),
             getData(dir),
-            ()->{}
+            violation -> {
+            }
         ));
 
     }
@@ -109,7 +115,8 @@ public class SHACLValidatorTest {
         assertTrue(shaclValidator.validate(
             getShacle(dir),
             getData(dir),
-            ()->{}
+            violation -> {
+            }
         ));
 
     }
@@ -125,7 +132,8 @@ public class SHACLValidatorTest {
         assertTrue(shaclValidator.validate(
             getShacle(dir),
             getData(dir),
-            ()->{}
+            violation -> {
+            }
         ));
 
     }
@@ -141,7 +149,8 @@ public class SHACLValidatorTest {
         assertTrue(shaclValidator.validate(
             getShacle(dir),
             getData(dir),
-            ()->{}
+            violation -> {
+            }
         ));
 
     }
@@ -156,7 +165,8 @@ public class SHACLValidatorTest {
         assertFalse(shaclValidator.validate(
             getShacle(dir),
             getData(dir),
-            ()->{}
+            violation -> {
+            }
         ));
 
     }
@@ -171,7 +181,8 @@ public class SHACLValidatorTest {
         assertFalse(shaclValidator.validate(
             getShacle(dir),
             getData(dir),
-            ()->{}
+            violation -> {
+            }
         ));
 
     }

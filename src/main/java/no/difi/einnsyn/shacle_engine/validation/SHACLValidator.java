@@ -2,7 +2,7 @@ package no.difi.einnsyn.shacle_engine.validation;
 
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.shacle_engine.rules.Shape;
-import no.difi.einnsyn.shacle_engine.utils.ConstraintViolationHandler;
+import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationHandler;
 import no.difi.einnsyn.shacle_engine.utils.Property;
 import no.difi.einnsyn.shacle_engine.utils.SHACLEngineUtils;
 import org.openrdf.model.IRI;
