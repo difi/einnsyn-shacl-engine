@@ -15,14 +15,14 @@ import java.util.List;
 /**
  * Created by havardottestad on 04/05/16.
  */
-public class Property {
+public class PropertyConstraint {
 
     private IRI datatype;
     private IRI predicate;
     private Integer minCount;
     private Integer maxCount;
 
-    Property(Resource object, RepositoryConnection shapes) {
+    PropertyConstraint(Resource object, RepositoryConnection shapes) {
 
         predicate = (IRI) shapes.getStatements(object, SHACL.predicate, null).next().getObject();
 
@@ -112,7 +112,7 @@ public class Property {
 
     @Override
     public String toString() {
-        return "Property{" +
+        return "PropertyConstraint{" +
             "predicate=" + predicate +
             ", minCount=" + minCount +
             ", maxCount=" + maxCount +

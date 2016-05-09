@@ -21,7 +21,7 @@ public class Shape {
 
 
     private Resource scopeClass;
-    private final List<Property> propertyList = new ArrayList<>();
+    private final List<PropertyConstraint> properties = new ArrayList<>();
 
 
     public Shape(Resource subject, RepositoryConnection shapesConnection) {
@@ -30,8 +30,8 @@ public class Shape {
         RepositoryResult<Statement> statements = shapesConnection.getStatements(subject, SHACL.property, null);
 
         Iterations.stream(statements)
-            .map(statement -> new Property((Resource) statement.getObject(), shapesConnection))
-            .forEach(propertyList::add);
+            .map(statement -> new PropertyConstraint((Resource) statement.getObject(), shapesConnection))
+            .forEach(properties::add);
 
     }
 
@@ -47,11 +47,11 @@ public class Shape {
                     .collect(Collectors.toList())
             )
 
-            // validate every property in the propertyList (constraint list)
-            .map(statement -> propertyList.stream()
+            // validate every property in the properties (constraint list)
+            .map(statement -> properties.stream()
                 .map(property -> property.validate(statement, constraintViolationHandler))
 
-               // .map(property -> property.validate(statement.getSubject(), dataConnection, constraintViolationHandler))
+                // .map(property -> property.validate(statement.getSubject(), dataConnection, constraintViolationHandler))
                 .reduce((b1, b2) -> b1 && b2))
 
             // filter, map and reduce to get the result

@@ -1,12 +1,17 @@
 package no.difi.einnsyn.shacle_engine.validation;
 
 import no.difi.einnsyn.sesameutils.SesameUtils;
+import no.difi.einnsyn.shacle_engine.violations.ConstraintViolation;
 import org.junit.Test;
 import org.openrdf.repository.Repository;
 import org.openrdf.rio.RDFFormat;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -178,11 +183,16 @@ public class SHACLValidatorTest {
 
         String dir = "simpleShacleMinDatatypeViolation2";
 
+
+        new ArrayList<String>().stream().collect(Collectors.toList());
+
+
+
         assertFalse(shaclValidator.validate(
             getShacle(dir),
             getData(dir),
-            violation -> {
-            }
+            (error) -> {}
+
         ));
 
     }
