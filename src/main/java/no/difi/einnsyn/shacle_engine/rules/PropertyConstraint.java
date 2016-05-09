@@ -2,7 +2,10 @@ package no.difi.einnsyn.shacle_engine.rules;
 
 import info.aduna.iteration.Iterations;
 import no.difi.einnsyn.SHACL;
+import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationDatatype;
 import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationHandler;
+import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationMaxCount;
+import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationMinCount;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -66,7 +69,7 @@ public class PropertyConstraint {
 //    }
 
 
-    public boolean validate(List<Statement> list, ConstraintViolationHandler constraintViolationHandler) {
+    public boolean validate(Resource resource, List<Statement> list, ConstraintViolationHandler constraintViolationHandler) {
 
         boolean pass = true;
 
@@ -78,12 +81,15 @@ public class PropertyConstraint {
 
             .map(statement -> {
                 if (datatype != null) {
-                    if(statement.getObject() instanceof  SimpleLiteral){
+                    if (statement.getObject() instanceof SimpleLiteral) {
                         if (!((SimpleLiteral) statement.getObject()).getDatatype().equals(datatype)) {
+                            constraintViolationHandler.handle(new ConstraintViolationDatatype(this, resource, "Mismatch for datatype", ((SimpleLiteral) statement.getObject()).getDatatype()));
                             datatypeViolation[0] = true;
                         }
-                    }else {
+                    } else {
                         datatypeViolation[0] = true;
+                        constraintViolationHandler.handle(new ConstraintViolationDatatype(this, resource, "Not a literal", null));
+
                     }
 
                 }
@@ -98,11 +104,14 @@ public class PropertyConstraint {
         if (maxCount != null) {
             if (maxCount < count) {
                 pass = false;
+                constraintViolationHandler.handle(new ConstraintViolationMaxCount(this, resource, "was "+count));
             }
         }
 
         if (minCount != null) {
             if (minCount > count) {
+                constraintViolationHandler.handle(new ConstraintViolationMinCount(this, resource, "was "+count));
+
                 pass = false;
             }
         }
@@ -113,7 +122,8 @@ public class PropertyConstraint {
     @Override
     public String toString() {
         return "PropertyConstraint{" +
-            "predicate=" + predicate +
+            "datatype=" + datatype +
+            ", predicate=" + predicate +
             ", minCount=" + minCount +
             ", maxCount=" + maxCount +
             '}';

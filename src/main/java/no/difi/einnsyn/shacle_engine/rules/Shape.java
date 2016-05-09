@@ -35,6 +35,16 @@ public class Shape {
 
     }
 
+    class TempStatementsAndResource {
+        Resource resource;
+        List<Statement> list;
+
+        public TempStatementsAndResource(Resource resource, List<Statement> list) {
+            this.resource = resource;
+            this.list = list;
+        }
+    }
+
     public boolean validate(RepositoryConnection dataConnection, ConstraintViolationHandler constraintViolationHandler) {
 
         RepositoryResult<Statement> statements = dataConnection.getStatements(null, RDF.TYPE, scopeClass);
@@ -42,14 +52,17 @@ public class Shape {
         Optional<Boolean> reduce = Iterations.stream(statements)
 
             .map(statement ->
-                Iterations
-                    .stream(dataConnection.getStatements(statement.getSubject(), null, null))
-                    .collect(Collectors.toList())
+                new TempStatementsAndResource(
+                    statement.getSubject(),
+                    Iterations
+                        .stream(dataConnection.getStatements(statement.getSubject(), null, null))
+                        .collect(Collectors.toList())
+                )
             )
 
             // validate every property in the properties (constraint list)
-            .map(statement -> properties.stream()
-                .map(property -> property.validate(statement, constraintViolationHandler))
+            .map(tempStatementsAndResource -> properties.stream()
+                .map(property -> property.validate(tempStatementsAndResource.resource, tempStatementsAndResource.list, constraintViolationHandler))
 
                 // .map(property -> property.validate(statement.getSubject(), dataConnection, constraintViolationHandler))
                 .reduce((b1, b2) -> b1 && b2))

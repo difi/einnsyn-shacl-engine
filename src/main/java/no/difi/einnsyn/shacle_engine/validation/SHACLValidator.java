@@ -2,9 +2,9 @@ package no.difi.einnsyn.shacle_engine.validation;
 
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.shacle_engine.rules.Shape;
-import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationHandler;
 import no.difi.einnsyn.shacle_engine.utils.Property;
 import no.difi.einnsyn.shacle_engine.utils.SHACLEngineUtils;
+import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationHandler;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
@@ -27,30 +27,42 @@ public class SHACLValidator {
 
     List<String> violations = new ArrayList<>();
 
+    List<Shape> shapes;
 
-    public boolean validate(Repository shacleRules, Repository data, ConstraintViolationHandler constraintViolationHandler) {
-
-        if (shacleRules == null || data == null) {
-            return false;
+    public SHACLValidator(Repository shacleRules) {
+        if(shacleRules == null){
+            return;
         }
 
         try (RepositoryConnection shapesConnection = shacleRules.getConnection()) {
+            RepositoryResult<Statement> statements = shapesConnection.getStatements(null, RDF.TYPE, SHACL.Shape);
 
-            try (RepositoryConnection dataConnection = data.getConnection()) {
+            shapes = QueryResults.stream(statements)
+                .map(statement -> new Shape(statement.getSubject(), shapesConnection))
+                .collect(Collectors.toList());
+
+        }
+
+    }
+
+    public boolean validate(Repository data, ConstraintViolationHandler constraintViolationHandler) {
+
+        if (shapes == null || data == null) {
+            return false;
+        }
 
 
-                RepositoryResult<Statement> statements = shapesConnection.getStatements(null, RDF.TYPE, SHACL.Shape);
+        try (RepositoryConnection dataConnection = data.getConnection()) {
 
-                Optional<Boolean> reduce = QueryResults.stream(statements)
-                    .map(statement -> new Shape(statement.getSubject(), shapesConnection))
-                    .map(shape -> shape.validate(dataConnection, constraintViolationHandler))
-                    .reduce((b1, b2) -> b1 && b2);
+            Optional<Boolean> reduce = shapes.stream()
+                .map(shape -> shape.validate(dataConnection, constraintViolationHandler))
+                .reduce((b1, b2) -> b1 && b2);
 
-                if (reduce.isPresent()) {
-                    return reduce.get();
-                }
+            if (reduce.isPresent()) {
+                return reduce.get();
+            }
 
-                return true;
+            return true;
 
 //
 //
@@ -76,11 +88,11 @@ public class SHACLValidator {
 //                   return false;
 ////                    violations.forEach(System.out::println);
 //                }
-            }
         }
-
-
     }
+
+
+
 
 
     private static List<MemValue> getAllShapePredicates(RepositoryConnection connection) {
