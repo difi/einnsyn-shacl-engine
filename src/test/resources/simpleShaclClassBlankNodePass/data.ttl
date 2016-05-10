@@ -2,10 +2,10 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix arkiv: <http://www.arkivverket.no/standarder/noark5/arkivstruktur/> .
 
-<http://example.org/1>
+_:b1
     a arkiv:Journalpost ;
-    arkiv:journalpoststatus "utfort" .
+    arkiv:journalpoststatus _:b2 .
 
-arkiv:utfort
+_:b2
     a arkiv:Journalpoststatus .
 

@@ -30,17 +30,20 @@ public class ConstraintViolationDatatype extends ConstraintViolation {
     @Override
     public boolean equals(Object obj) {
 
-        if(obj instanceof ConstraintViolationDatatype){
+        if (obj instanceof ConstraintViolationDatatype) {
 
             ConstraintViolationDatatype obj1 = (ConstraintViolationDatatype) obj;
 
-            if(!obj1.actualDatatype.equals(actualDatatype)) return false;
-            if(!obj1.resource.equals(resource)) return false;
-
+            if (!obj1.actualDatatype.equals(actualDatatype)) {
+                return false;
+            }
+            if (!obj1.resource.equals(resource)) {
+                return false;
+            }
 
 
             return true;
-        }else {
+        } else {
             return false;
         }
 

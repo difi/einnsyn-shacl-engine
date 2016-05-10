@@ -2,14 +2,12 @@ package no.difi.einnsyn.shacle_engine.rules;
 
 import info.aduna.iteration.Iterations;
 import no.difi.einnsyn.SHACL;
-import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationDatatype;
-import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationHandler;
-import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationMaxCount;
-import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationMinCount;
+import no.difi.einnsyn.shacle_engine.violations.*;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.impl.SimpleLiteral;
+import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryResult;
 
@@ -22,6 +20,7 @@ public class PropertyConstraint {
 
     private IRI datatype;
     private IRI predicate;
+    private IRI class_property;
     private Integer minCount;
     private Integer maxCount;
 
@@ -40,7 +39,11 @@ public class PropertyConstraint {
             }
 
             if (statement.getPredicate().equals(SHACL.datatype)) {
-                datatype = ((IRI) statement.getObject());
+                datatype = (IRI) statement.getObject();
+            }
+
+            if (statement.getPredicate().equals(SHACL.class_property)) {
+                class_property = (IRI) statement.getObject();
             }
         });
 
@@ -74,6 +77,7 @@ public class PropertyConstraint {
         boolean pass = true;
 
         final boolean[] datatypeViolation = {false};
+        final boolean[] classViolation = {false};
 
         long count = list.stream()
 
@@ -95,7 +99,31 @@ public class PropertyConstraint {
                 }
                 return statement;
             })
+                .map(statement -> {
+                    if (class_property != null) {
+
+                        if (statement.getObject() instanceof Resource) {
+                            boolean classPropertyOfIncomingObject = dataGraphConnection.hasStatement((Resource) statement.getObject(), RDF.TYPE, class_property, true);
+
+                            if (!classPropertyOfIncomingObject) {
+                                classViolation[0] = true;
+                                constraintViolationHandler.handle(new ConstraintViolationClass(this, resource, "Incorrect class type."));
+                            }
+
+                        }
+                        else {
+                            classViolation[0] = true;
+                            constraintViolationHandler.handle(new ConstraintViolationClass(this, resource, "Object is a literal, expected IRI."));
+                        }
+
+                    }
+                    return statement;
+                })
             .count();
+
+        if (classViolation[0]) {
+            pass = false;
+        }
 
         if (datatypeViolation[0]) {
             pass = false;

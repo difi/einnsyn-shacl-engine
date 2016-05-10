@@ -2,6 +2,7 @@ package no.difi.einnsyn.shacle_engine.validation;
 
 import no.difi.einnsyn.sesameutils.SesameUtils;
 import no.difi.einnsyn.shacle_engine.violations.ConstraintViolation;
+import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationClass;
 import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationDatatype;
 import org.junit.Test;
 import org.openrdf.model.impl.SimpleValueFactory;
@@ -15,11 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Created by havardottestad on 04/05/16.
+ *
+ *
  */
 public class SHACLValidatorTest {
 
@@ -187,17 +191,46 @@ public class SHACLValidatorTest {
     }
 
     @Test
+    public void simpleShaclClassBlankNodePass() throws Exception {
+        String dir = "simpleShaclClassBlankNodePass";
+
+        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir));
+
+
+        assertTrue(shaclValidator.validate(
+            getData(dir),
+            violation -> {
+            }
+        ));
+
+    }
+
+    @Test
     public void simpleShaclClassViolation2() throws Exception {
         String dir = "simpleShaclClassViolation2";
 
         SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir));
 
 
+
+        List<ConstraintViolation> violations = new ArrayList<>();
+
         assertFalse(shaclValidator.validate(
                 getData(dir),
                 violation -> {
+                    violations.add(violation);
+                    System.out.println(violation);
                 }
         ));
+
+        SimpleValueFactory instance = SimpleValueFactory.getInstance();
+
+        List<ConstraintViolation> expectedViolations = new ArrayList<>();
+        expectedViolations.add(new ConstraintViolationClass(null, instance.createIRI("http://example.org/1"), "Object is a literal, expected IRI."));
+
+        assertEquals("", expectedViolations.size(), violations.size());
+        assertTrue("", violations.containsAll(expectedViolations));
+        assertTrue("", expectedViolations.containsAll(violations));
 
     }
 
