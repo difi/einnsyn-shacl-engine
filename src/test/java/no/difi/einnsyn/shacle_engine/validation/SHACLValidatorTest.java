@@ -157,6 +157,51 @@ public class SHACLValidatorTest {
     }
 
     @Test
+    public void simpleShaclClassViolation() throws Exception {
+        String dir = "simpleShaclClassViolation";
+
+        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir));
+
+
+        assertFalse(shaclValidator.validate(
+                getData(dir),
+                violation -> {
+                }
+        ));
+
+    }
+
+    @Test
+    public void simpleShaclClassPass() throws Exception {
+        String dir = "simpleShaclClassPass";
+
+        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir));
+
+
+        assertTrue(shaclValidator.validate(
+                getData(dir),
+                violation -> {
+                }
+        ));
+
+    }
+
+    @Test
+    public void simpleShaclClassViolation2() throws Exception {
+        String dir = "simpleShaclClassViolation2";
+
+        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir));
+
+
+        assertFalse(shaclValidator.validate(
+                getData(dir),
+                violation -> {
+                }
+        ));
+
+    }
+
+    @Test
     public void simpleShacleMinDatatypeViolation() throws Exception {
         String dir = "simpleShacleMinDatatypeViolation";
 
