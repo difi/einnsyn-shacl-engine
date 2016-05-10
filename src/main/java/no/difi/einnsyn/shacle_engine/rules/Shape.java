@@ -47,7 +47,7 @@ public class Shape {
 
     public boolean validate(RepositoryConnection dataConnection, ConstraintViolationHandler constraintViolationHandler) {
 
-        RepositoryResult<Statement> statements = dataConnection.getStatements(null, RDF.TYPE, scopeClass);
+        RepositoryResult<Statement> statements = dataConnection.getStatements(null, RDF.TYPE, scopeClass, true);
 
         Optional<Boolean> reduce = Iterations.stream(statements)
 
@@ -55,7 +55,7 @@ public class Shape {
                 new TempStatementsAndResource(
                     statement.getSubject(),
                     Iterations
-                        .stream(dataConnection.getStatements(statement.getSubject(), null, null))
+                        .stream(dataConnection.getStatements(statement.getSubject(), null, null, true))
                         .collect(Collectors.toList())
                 )
             )

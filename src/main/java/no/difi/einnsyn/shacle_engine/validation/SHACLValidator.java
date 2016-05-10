@@ -13,6 +13,9 @@ import org.openrdf.query.QueryResults;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryResult;
+import org.openrdf.repository.sail.SailRepository;
+import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
+import org.openrdf.sail.memory.MemoryStore;
 import org.openrdf.sail.memory.model.*;
 
 import java.util.ArrayList;
@@ -29,12 +32,14 @@ public class SHACLValidator {
 
     List<Shape> shapes;
 
-    public SHACLValidator(Repository shacleRules) {
-        if(shacleRules == null){
+    Repository ontology;
+
+    public SHACLValidator(Repository shaclRules, Repository ontology) {
+        if(shaclRules == null){
             return;
         }
 
-        try (RepositoryConnection shapesConnection = shacleRules.getConnection()) {
+        try (RepositoryConnection shapesConnection = shaclRules.getConnection()) {
             RepositoryResult<Statement> statements = shapesConnection.getStatements(null, RDF.TYPE, SHACL.Shape);
 
             shapes = QueryResults.stream(statements)
@@ -43,6 +48,8 @@ public class SHACLValidator {
 
         }
 
+        this.ontology = ontology;
+
     }
 
     public boolean validate(Repository data, ConstraintViolationHandler constraintViolationHandler) {
@@ -50,6 +57,26 @@ public class SHACLValidator {
         if (shapes == null || data == null) {
             return false;
         }
+
+        if (ontology != null) {
+            Repository inferrencedRepository = new SailRepository(new ForwardChainingRDFSInferencer(new MemoryStore()));
+            inferrencedRepository.initialize();
+
+            try (RepositoryConnection inferrencedConnection = inferrencedRepository.getConnection()) {
+                try (RepositoryConnection dataConnection = data.getConnection()) {
+
+                    inferrencedConnection.add(dataConnection.getStatements(null, null, null));
+                }
+
+                try (RepositoryConnection ontologyConnection = ontology.getConnection()) {
+
+                    inferrencedConnection.add(ontologyConnection.getStatements(null, null, null));
+                }
+            }
+
+            data = inferrencedRepository;
+        }
+
 
 
         try (RepositoryConnection dataConnection = data.getConnection()) {
