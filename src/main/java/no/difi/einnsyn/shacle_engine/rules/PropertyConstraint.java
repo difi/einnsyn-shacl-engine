@@ -2,17 +2,19 @@ package no.difi.einnsyn.shacle_engine.rules;
 
 import info.aduna.iteration.Iterations;
 import no.difi.einnsyn.SHACL;
+import no.difi.einnsyn.sesameutils.SesameUtils;
 import no.difi.einnsyn.shacle_engine.rules.propertyconstraints.Class;
 import no.difi.einnsyn.shacle_engine.rules.propertyconstraints.Datatype;
 import no.difi.einnsyn.shacle_engine.rules.propertyconstraints.MinMax;
 import no.difi.einnsyn.shacle_engine.violations.*;
 import org.apache.commons.lang.NotImplementedException;
-import org.openrdf.model.IRI;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
+import org.openrdf.model.*;
 import org.openrdf.model.impl.SimpleLiteral;
+import org.openrdf.query.QueryResult;
+import org.openrdf.query.QueryResults;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryResult;
+import org.openrdf.rio.RDFFormat;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +47,7 @@ public abstract class PropertyConstraint {
         IRI object1 = (IRI) classPropertyStatement.getObject();
 
         if (statements.hasNext()) {
-            throw new IllegalArgumentException("There may only be one class property per constraint.");
+            throw new IllegalArgumentException("There may only be one value for property <"+property.toString()+">");
         }
         return object1;
     }
@@ -57,7 +59,7 @@ public abstract class PropertyConstraint {
            Integer object1 = ((SimpleLiteral) classPropertyStatement.getObject()).intValue();
 
            if (statements.hasNext()) {
-               throw new IllegalArgumentException("There may only be one class property per constraint.");
+               throw new IllegalArgumentException("There may only be one integer value for property <"+property.toString()+">");
            }
 
            return Optional.of(object1);
@@ -88,7 +90,12 @@ public abstract class PropertyConstraint {
                 return new MinMax(object, shapesConnection);
             }
 
-            throw new NotImplementedException("Property constraint not implemented.");
+            // Throw exception for unhandled contraints.
+            RepositoryResult<Statement> statements = shapesConnection.getStatements(object, null, null);
+            Model model = QueryResults.asModel(statements);
+            String shacleRuleAsTurtle = SesameUtils.modelToString(model, RDFFormat.TURTLE);
+
+            throw new NotImplementedException("Property constraint not implemented. \n"+shacleRuleAsTurtle);
         }
     }
 }
