@@ -2,143 +2,93 @@ package no.difi.einnsyn.shacle_engine.rules;
 
 import info.aduna.iteration.Iterations;
 import no.difi.einnsyn.SHACL;
+import no.difi.einnsyn.shacle_engine.rules.propertyconstraints.Class;
+import no.difi.einnsyn.shacle_engine.rules.propertyconstraints.Datatype;
+import no.difi.einnsyn.shacle_engine.rules.propertyconstraints.MinMax;
 import no.difi.einnsyn.shacle_engine.violations.*;
+import org.apache.commons.lang.NotImplementedException;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.impl.SimpleLiteral;
-import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryResult;
 
 import java.util.List;
+import java.util.Optional;
+
+import static no.difi.einnsyn.SHACL.minCount;
 
 /**
  * Created by havardottestad on 04/05/16.
  *
  *
  */
-public class PropertyConstraint {
+public abstract class PropertyConstraint {
 
-    private IRI datatype;
-    private IRI predicate;
-    private IRI class_property;
-    private Integer minCount;
-    private Integer maxCount;
+    protected IRI predicate;
 
-    PropertyConstraint(Resource object, RepositoryConnection shapes) {
+    protected PropertyConstraint(Resource object, RepositoryConnection shapes) {
 
         predicate = (IRI) shapes.getStatements(object, SHACL.predicate, null).next().getObject();
 
-        RepositoryResult<Statement> statements = shapes.getStatements(object, null, null);
-        Iterations.stream(statements).forEach(statement -> {
-            if (statement.getPredicate().equals(SHACL.minCount)) {
-                minCount = ((SimpleLiteral) statement.getObject()).intValue();
-            }
+    }
 
-            if (statement.getPredicate().equals(SHACL.maxCount)) {
-                maxCount = ((SimpleLiteral) statement.getObject()).intValue();
-            }
 
-            if (statement.getPredicate().equals(SHACL.datatype)) {
-                datatype = (IRI) statement.getObject();
-            }
+    protected abstract void validate(Resource resource, List<Statement> list, ConstraintViolationHandler constraintViolationHandler,
+                         RepositoryConnection dataGraphConnection);
 
-            if (statement.getPredicate().equals(SHACL.class_property)) {
-                class_property = (IRI) statement.getObject();
-            }
-        });
 
+      protected IRI getExactlyOneIri(RepositoryConnection repoConnetion, Resource object, IRI property) {
+        RepositoryResult<Statement> statements = repoConnetion.getStatements(object, property, null);
+        Statement classPropertyStatement = statements.next();
+        IRI object1 = (IRI) classPropertyStatement.getObject();
+
+        if (statements.hasNext()) {
+            throw new IllegalArgumentException("There may only be one class property per constraint.");
+        }
+        return object1;
+    }
+
+    protected Optional<Integer> getOptionalOneInteger(RepositoryConnection repoConnetion, Resource object, IRI property) {
+        RepositoryResult<Statement> statements = repoConnetion.getStatements(object, property, null);
+       if(statements.hasNext()){
+           Statement classPropertyStatement = statements.next();
+           Integer object1 = ((SimpleLiteral) classPropertyStatement.getObject()).intValue();
+
+           if (statements.hasNext()) {
+               throw new IllegalArgumentException("There may only be one class property per constraint.");
+           }
+
+           return Optional.of(object1);
+       }
+
+        return Optional.empty();
 
     }
 
 
-    void validate(Resource resource, List<Statement> list, ConstraintViolationHandler constraintViolationHandler,
-                     RepositoryConnection dataGraphConnection) {
+    static class Factory {
 
+        public static PropertyConstraint create(Resource object, RepositoryConnection shapesConnection) {
 
-        long count = list.stream()
-
-            .filter(statement -> statement.getPredicate().equals(predicate))
-            .count();
-
-
-        if (maxCount != null) {
-            if (maxCount < count) {
-                constraintViolationHandler.handle(new ConstraintViolationMaxCount(this, resource, "was " + count));
+            // class
+            if(shapesConnection.hasStatement(object, SHACL.class_property, null, true)) {
+                return new Class(object, shapesConnection);
             }
-        }
 
-        if (minCount != null) {
-            if (minCount > count) {
-                constraintViolationHandler.handle(new ConstraintViolationMinCount(this, resource, "was " + count));
-
+            // datatype
+            if(shapesConnection.hasStatement(object, SHACL.datatype, null, true)) {
+                return new Datatype(object, shapesConnection);
             }
+
+            // min max
+            if(shapesConnection.hasStatement(object, SHACL.minCount, null, true) ||
+                shapesConnection.hasStatement(object, SHACL.maxCount, null, true)) {
+                return new MinMax(object, shapesConnection);
+            }
+
+            throw new NotImplementedException("Property constraint not implemented.");
         }
-
-        if (datatype != null) {
-
-            list.stream()
-
-                .filter(statement -> statement.getPredicate().equals(predicate))
-                .filter(statement -> !(statement.getObject() instanceof SimpleLiteral))
-                .forEach(statement -> {
-
-                    constraintViolationHandler.handle(new ConstraintViolationDatatype(this, resource, "Not a literal", null));
-
-                });
-
-            list.stream()
-
-                .filter(statement -> statement.getPredicate().equals(predicate))
-                .filter(statement -> {
-                    if (statement.getObject() instanceof SimpleLiteral) {
-                        if (!((SimpleLiteral) statement.getObject()).getDatatype().equals(datatype)) {
-                            return true;
-                        }
-                    }
-                    return false;
-
-
-                })
-                .forEach(statement -> {
-                    constraintViolationHandler.handle(new ConstraintViolationDatatype(this, resource, "Mismatch for datatype", ((SimpleLiteral) statement.getObject()).getDatatype()));
-                });
-        }
-        if (class_property != null) {
-
-            list.stream()
-
-                .filter(statement -> statement.getPredicate().equals(predicate))
-                .filter(statement -> (statement.getObject() instanceof Resource) &&
-                    !(dataGraphConnection.hasStatement((Resource) statement.getObject(), RDF.TYPE, class_property, true)))
-
-                .forEach(statement -> {
-                    constraintViolationHandler.handle(new ConstraintViolationClass(this, resource, "Incorrect class type."));
-                });
-
-
-            list.stream()
-
-                .filter(statement -> statement.getPredicate().equals(predicate))
-                .filter(statement -> !(statement.getObject() instanceof Resource))
-                .forEach(statement -> {
-                    constraintViolationHandler.handle(new ConstraintViolationClass(this, resource, "Object is a literal, expected IRI."));
-                });
-        }
-
-
-
-
-    }
-
-    @Override
-    public String toString() {
-        return "PropertyConstraint{" +
-            "datatype=" + datatype +
-            ", predicate=" + predicate +
-            ", minCount=" + minCount +
-            ", maxCount=" + maxCount +
-            '}';
     }
 }

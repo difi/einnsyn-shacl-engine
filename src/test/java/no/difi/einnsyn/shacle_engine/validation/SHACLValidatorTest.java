@@ -330,10 +330,7 @@ public class SHACLValidatorTest {
 
         assertTrue(shaclValidator.validate(
             getData(dir),
-            (error) -> {
-                System.err.println(error);
-            }
-
+            System.err::println
         ));
 
     }

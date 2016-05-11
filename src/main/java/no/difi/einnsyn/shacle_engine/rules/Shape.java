@@ -29,7 +29,7 @@ public class Shape {
         RepositoryResult<Statement> statements = shapesConnection.getStatements(subject, SHACL.property, null);
 
         Iterations.stream(statements)
-            .map(statement -> new PropertyConstraint((Resource) statement.getObject(), shapesConnection))
+            .map(statement -> PropertyConstraint.Factory.create((Resource) statement.getObject(), shapesConnection))
             .forEach(properties::add);
 
     }
