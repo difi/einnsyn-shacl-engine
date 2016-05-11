@@ -15,6 +15,8 @@ import java.util.List;
 
 /**
  * Created by havardottestad on 04/05/16.
+ *
+ *
  */
 public class PropertyConstraint {
 
@@ -51,100 +53,83 @@ public class PropertyConstraint {
     }
 
 
-//    boolean validate(Resource subject, RepositoryConnection dataConnection, ConstraintViolationHandler constraintViolationHandler) {
-//
-//
-//        long count = Iterations
-//            .stream(dataConnection.getStatements(subject, predicate, null))
-//            .count();
-//
-//
-//        if(maxCount != null){
-//            if (maxCount < count) return false;
-//        }
-//
-//        if(minCount != null){
-//            if (minCount > count) return false;
-//        }
-//
-//        return true;
-//
-//    }
+    void validate(Resource resource, List<Statement> list, ConstraintViolationHandler constraintViolationHandler,
+                     RepositoryConnection dataGraphConnection) {
 
-
-    public boolean validate(Resource resource, List<Statement> list, ConstraintViolationHandler constraintViolationHandler) {
-
-        boolean pass = true;
-
-        final boolean[] datatypeViolation = {false};
-        final boolean[] classViolation = {false};
 
         long count = list.stream()
 
             .filter(statement -> statement.getPredicate().equals(predicate))
-
-            .map(statement -> {
-                if (datatype != null) {
-                    if (statement.getObject() instanceof SimpleLiteral) {
-                        if (!((SimpleLiteral) statement.getObject()).getDatatype().equals(datatype)) {
-                            constraintViolationHandler.handle(new ConstraintViolationDatatype(this, resource, "Mismatch for datatype", ((SimpleLiteral) statement.getObject()).getDatatype()));
-                            datatypeViolation[0] = true;
-                        }
-                    } else {
-                        datatypeViolation[0] = true;
-                        constraintViolationHandler.handle(new ConstraintViolationDatatype(this, resource, "Not a literal", null));
-
-                    }
-
-                }
-                return statement;
-            })
-                .map(statement -> {
-                    if (class_property != null) {
-
-                        if (statement.getObject() instanceof Resource) {
-                            boolean classPropertyOfIncomingObject = dataGraphConnection.hasStatement((Resource) statement.getObject(), RDF.TYPE, class_property, true);
-
-                            if (!classPropertyOfIncomingObject) {
-                                classViolation[0] = true;
-                                constraintViolationHandler.handle(new ConstraintViolationClass(this, resource, "Incorrect class type."));
-                            }
-
-                        }
-                        else {
-                            classViolation[0] = true;
-                            constraintViolationHandler.handle(new ConstraintViolationClass(this, resource, "Object is a literal, expected IRI."));
-                        }
-
-                    }
-                    return statement;
-                })
             .count();
 
-        if (classViolation[0]) {
-            pass = false;
-        }
-
-        if (datatypeViolation[0]) {
-            pass = false;
-        }
 
         if (maxCount != null) {
             if (maxCount < count) {
-                pass = false;
-                constraintViolationHandler.handle(new ConstraintViolationMaxCount(this, resource, "was "+count));
+                constraintViolationHandler.handle(new ConstraintViolationMaxCount(this, resource, "was " + count));
             }
         }
 
         if (minCount != null) {
             if (minCount > count) {
-                constraintViolationHandler.handle(new ConstraintViolationMinCount(this, resource, "was "+count));
+                constraintViolationHandler.handle(new ConstraintViolationMinCount(this, resource, "was " + count));
 
-                pass = false;
             }
         }
 
-        return pass;
+        if (datatype != null) {
+
+            list.stream()
+
+                .filter(statement -> statement.getPredicate().equals(predicate))
+                .filter(statement -> !(statement.getObject() instanceof SimpleLiteral))
+                .forEach(statement -> {
+
+                    constraintViolationHandler.handle(new ConstraintViolationDatatype(this, resource, "Not a literal", null));
+
+                });
+
+            list.stream()
+
+                .filter(statement -> statement.getPredicate().equals(predicate))
+                .filter(statement -> {
+                    if (statement.getObject() instanceof SimpleLiteral) {
+                        if (!((SimpleLiteral) statement.getObject()).getDatatype().equals(datatype)) {
+                            return true;
+                        }
+                    }
+                    return false;
+
+
+                })
+                .forEach(statement -> {
+                    constraintViolationHandler.handle(new ConstraintViolationDatatype(this, resource, "Mismatch for datatype", ((SimpleLiteral) statement.getObject()).getDatatype()));
+                });
+        }
+        if (class_property != null) {
+
+            list.stream()
+
+                .filter(statement -> statement.getPredicate().equals(predicate))
+                .filter(statement -> (statement.getObject() instanceof Resource) &&
+                    !(dataGraphConnection.hasStatement((Resource) statement.getObject(), RDF.TYPE, class_property, true)))
+
+                .forEach(statement -> {
+                    constraintViolationHandler.handle(new ConstraintViolationClass(this, resource, "Incorrect class type."));
+                });
+
+
+            list.stream()
+
+                .filter(statement -> statement.getPredicate().equals(predicate))
+                .filter(statement -> !(statement.getObject() instanceof Resource))
+                .forEach(statement -> {
+                    constraintViolationHandler.handle(new ConstraintViolationClass(this, resource, "Object is a literal, expected IRI."));
+                });
+        }
+
+
+
+
     }
 
     @Override

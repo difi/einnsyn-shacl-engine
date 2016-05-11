@@ -11,7 +11,6 @@ import org.openrdf.repository.RepositoryResult;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -45,11 +44,11 @@ public class Shape {
         }
     }
 
-    public boolean validate(RepositoryConnection dataConnection, ConstraintViolationHandler constraintViolationHandler) {
+    public void validate(RepositoryConnection dataConnection, ConstraintViolationHandler constraintViolationHandler) {
 
         RepositoryResult<Statement> statements = dataConnection.getStatements(null, RDF.TYPE, scopeClass, true);
 
-        Optional<Boolean> reduce = Iterations.stream(statements)
+        Iterations.stream(statements)
 
             .map(statement ->
                 new TempStatementsAndResource(
@@ -61,22 +60,9 @@ public class Shape {
             )
 
             // validate every property in the properties (constraint list)
-            .map(tempStatementsAndResource -> properties.stream()
-                .map(property -> property.validate(tempStatementsAndResource.resource, tempStatementsAndResource.list, constraintViolationHandler))
-
-                // .map(property -> property.validate(statement.getSubject(), dataConnection, constraintViolationHandler))
-                .reduce((b1, b2) -> b1 && b2))
-
-            // filter, map and reduce to get the result
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .reduce((b1, b2) -> b1 && b2);
-
-        if (reduce.isPresent()) {
-            return reduce.get();
-        }
-
-        return true;
+            .forEach(tempStatementsAndResource ->
+                properties.stream()
+                    .forEach(property -> property.validate(tempStatementsAndResource.resource, tempStatementsAndResource.list, constraintViolationHandler, dataConnection)));
 
 
     }
