@@ -73,6 +73,7 @@ public class SHACLValidator {
 
         try (RepositoryConnection inferencedConnection = inferencedRepository.getConnection()) {
 
+            inferencedConnection.begin();
             try (RepositoryConnection dataConnection = data.getConnection()) {
                 inferencedConnection.add(dataConnection.getStatements(null, null, null));
             }
@@ -80,10 +81,10 @@ public class SHACLValidator {
             try (RepositoryConnection ontologyConnection = ontology.getConnection()) {
                 inferencedConnection.add(ontologyConnection.getStatements(null, null, null));
             }
+            inferencedConnection.commit();
         }
 
-        data = inferencedRepository;
-        return data;
+        return inferencedRepository;
     }
 
 }
