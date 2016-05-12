@@ -5,6 +5,8 @@ import org.openrdf.model.Resource;
 
 /**
  * Created by havardottestad on 06/05/16.
+ *
+ *
  */
 public class ConstraintViolationMaxCount extends ConstraintViolation {
     public ConstraintViolationMaxCount(PropertyConstraint propertyConstraint, Resource resource, String s) {

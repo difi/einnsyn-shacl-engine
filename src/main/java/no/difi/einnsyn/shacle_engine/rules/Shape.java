@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 /**
  * Created by havardottestad on 04/05/16.
+ *
+ *
  */
 public class Shape {
 
@@ -34,11 +36,11 @@ public class Shape {
 
     }
 
-    class TempStatementsAndResource {
+    private class TempStatementsAndResource {
         Resource resource;
         List<Statement> list;
 
-        public TempStatementsAndResource(Resource resource, List<Statement> list) {
+        TempStatementsAndResource(Resource resource, List<Statement> list) {
             this.resource = resource;
             this.list = list;
         }
@@ -62,8 +64,7 @@ public class Shape {
             // validate every property in the properties (constraint list)
             .forEach(tempStatementsAndResource ->
                 properties.stream()
-                    .forEach(property -> property.validate(tempStatementsAndResource.resource, tempStatementsAndResource.list, constraintViolationHandler, dataConnection)));
-
-
+                    .forEach(property -> property.validate(tempStatementsAndResource.resource,
+                        tempStatementsAndResource.list, constraintViolationHandler, dataConnection)));
     }
 }

@@ -6,6 +6,8 @@ import org.openrdf.model.Resource;
 
 /**
  * Created by havardottestad on 06/05/16.
+ *
+ *
  */
 public class ConstraintViolationDatatype extends ConstraintViolation {
     private final IRI actualDatatype;
@@ -13,8 +15,6 @@ public class ConstraintViolationDatatype extends ConstraintViolation {
     public ConstraintViolationDatatype(PropertyConstraint propertyConstraint, Resource resource, String s, IRI actualDatatype) {
         super(propertyConstraint, resource, s);
         this.actualDatatype = actualDatatype;
-
-
     }
 
     @Override
@@ -32,21 +32,12 @@ public class ConstraintViolationDatatype extends ConstraintViolation {
 
         if (obj instanceof ConstraintViolationDatatype) {
 
-            ConstraintViolationDatatype obj1 = (ConstraintViolationDatatype) obj;
+            ConstraintViolationDatatype datatypeObject = (ConstraintViolationDatatype) obj;
 
-            if (!obj1.actualDatatype.equals(actualDatatype)) {
-                return false;
-            }
-            if (!obj1.resource.equals(resource)) {
-                return false;
-            }
+            return datatypeObject.actualDatatype.equals(actualDatatype) && datatypeObject.resource.equals(resource);
 
-
-            return true;
         } else {
             return false;
         }
-
-
     }
 }

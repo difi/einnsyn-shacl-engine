@@ -5,19 +5,20 @@ import org.openrdf.model.Resource;
 
 /**
  * Created by havardottestad on 06/05/16.
+ *
+ *
  */
 public class ConstraintViolation {
      final PropertyConstraint propertyConstraint;
      final Resource resource;
      final String message;
 
-    public ConstraintViolation(PropertyConstraint propertyConstraint, Resource resource, String s) {
+    ConstraintViolation(PropertyConstraint propertyConstraint, Resource resource, String s) {
         this.propertyConstraint = propertyConstraint;
         this.resource = resource;
         this.message = s;
 
     }
-
 
     @Override
     public String toString() {

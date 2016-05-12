@@ -1,17 +1,12 @@
 package no.difi.einnsyn.shacle_engine.rules.propertyconstraints;
 
-import no.difi.einnsyn.shacle_engine.rules.propertyconstraints.MinMax;
-
-import info.aduna.iteration.Iterations;
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.shacle_engine.violations.*;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.impl.SimpleLiteral;
-import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryResult;
 
 import java.util.List;
 
@@ -30,22 +25,18 @@ public class Datatype extends MinMax {
         this.datatype = getExactlyOneIri(shapes, object, SHACL.datatype);
     }
 
-
     public void validate(Resource resource, List<Statement> list, ConstraintViolationHandler constraintViolationHandler,
                          RepositoryConnection dataGraphConnection) {
 
         list.stream()
-
             .filter(statement -> statement.getPredicate().equals(predicate))
             .filter(statement -> !(statement.getObject() instanceof SimpleLiteral))
-            .forEach(statement -> {
+            .forEach(statement -> constraintViolationHandler.handle(
+                new ConstraintViolationDatatype(this, resource, "Not a literal", null))
+            );
 
-                constraintViolationHandler.handle(new ConstraintViolationDatatype(this, resource, "Not a literal", null));
-
-            });
 
         list.stream()
-
             .filter(statement -> statement.getPredicate().equals(predicate))
             .filter(statement -> {
                 if (statement.getObject() instanceof SimpleLiteral) {
@@ -54,12 +45,11 @@ public class Datatype extends MinMax {
                     }
                 }
                 return false;
-
-
             })
-            .forEach(statement -> {
-                constraintViolationHandler.handle(new ConstraintViolationDatatype(this, resource, "Mismatch for datatype", ((SimpleLiteral) statement.getObject()).getDatatype()));
-            });
+            .forEach(statement -> constraintViolationHandler.handle(
+                new ConstraintViolationDatatype(this, resource, "Mismatch for datatype",
+                    ((SimpleLiteral) statement.getObject()).getDatatype())
+            ));
     }
 
     @Override

@@ -1,14 +1,11 @@
 package no.difi.einnsyn.shacle_engine.rules.propertyconstraints;
 
-import info.aduna.iteration.Iterations;
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.shacle_engine.rules.PropertyConstraint;
 import no.difi.einnsyn.shacle_engine.violations.*;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
-import org.openrdf.model.impl.SimpleLiteral;
 import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryResult;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +26,6 @@ public class MinMax extends PropertyConstraint {
         this.minCount = getOptionalOneInteger(shapes, object, SHACL.minCount);
         this.maxCount = getOptionalOneInteger(shapes, object, SHACL.maxCount);
     }
-
 
     public void validate(Resource resource, List<Statement> list, ConstraintViolationHandler constraintViolationHandler,
                          RepositoryConnection dataGraphConnection) {

@@ -2,7 +2,6 @@ package no.difi.einnsyn.shacle_engine.validation;
 
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.shacle_engine.rules.Shape;
-import no.difi.einnsyn.shacle_engine.violations.ConstraintViolation;
 import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationHandler;
 import org.openrdf.model.Statement;
 import org.openrdf.model.vocabulary.RDF;
@@ -14,20 +13,17 @@ import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
 import org.openrdf.sail.memory.MemoryStore;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Created by veronika on 4/28/16.
+ *
+ *
  */
 public class SHACLValidator {
 
-    List<String> violations = new ArrayList<>();
-
     private List<Shape> shapes;
-
     private Repository ontology;
 
     public SHACLValidator(Repository shaclRules, Repository ontology) {
@@ -41,7 +37,6 @@ public class SHACLValidator {
             shapes = QueryResults.stream(statements)
                 .map(statement -> new Shape(statement.getSubject(), shapesConnection))
                 .collect(Collectors.toList());
-
         }
 
         this.ontology = ontology;
@@ -60,7 +55,6 @@ public class SHACLValidator {
 
         final boolean[] failed = {false};
 
-
         try (RepositoryConnection dataConnection = data.getConnection()) {
 
             shapes.stream()
@@ -69,31 +63,26 @@ public class SHACLValidator {
                     constraintViolationHandler.handle(violation);
                 }));
 
-
-
             return !failed[0];
-
-
         }
     }
 
     private static Repository addInferencing(Repository data, Repository ontology) {
-        Repository inferrencedRepository = new SailRepository(new ForwardChainingRDFSInferencer(new MemoryStore()));
-        inferrencedRepository.initialize();
+        Repository inferencedRepository = new SailRepository(new ForwardChainingRDFSInferencer(new MemoryStore()));
+        inferencedRepository.initialize();
 
-        try (RepositoryConnection inferrencedConnection = inferrencedRepository.getConnection()) {
+        try (RepositoryConnection inferencedConnection = inferencedRepository.getConnection()) {
+            
             try (RepositoryConnection dataConnection = data.getConnection()) {
-
-                inferrencedConnection.add(dataConnection.getStatements(null, null, null));
+                inferencedConnection.add(dataConnection.getStatements(null, null, null));
             }
 
             try (RepositoryConnection ontologyConnection = ontology.getConnection()) {
-
-                inferrencedConnection.add(ontologyConnection.getStatements(null, null, null));
+                inferencedConnection.add(ontologyConnection.getStatements(null, null, null));
             }
         }
 
-        data = inferrencedRepository;
+        data = inferencedRepository;
         return data;
     }
 

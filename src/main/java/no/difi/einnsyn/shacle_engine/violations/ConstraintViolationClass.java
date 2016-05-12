@@ -18,21 +18,12 @@ public class ConstraintViolationClass extends ConstraintViolation {
 
         if (obj instanceof ConstraintViolationClass) {
 
-            ConstraintViolationClass obj1 = (ConstraintViolationClass) obj;
+            ConstraintViolationClass classObject = (ConstraintViolationClass) obj;
 
-            if (!obj1.message.equals(message)) {
-                return false;
-            }
-            if (!obj1.resource.equals(resource)) {
-                return false;
-            }
-
-            return true;
+            return classObject.message.equals(message) && classObject.resource.equals(resource);
 
         } else {
-
             return false;
         }
-
     }
 }
