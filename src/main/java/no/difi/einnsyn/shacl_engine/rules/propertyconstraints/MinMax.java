@@ -1,8 +1,8 @@
-package no.difi.einnsyn.shacle_engine.rules.propertyconstraints;
+package no.difi.einnsyn.shacl_engine.rules.propertyconstraints;
 
 import no.difi.einnsyn.SHACL;
-import no.difi.einnsyn.shacle_engine.rules.PropertyConstraint;
-import no.difi.einnsyn.shacle_engine.violations.*;
+import no.difi.einnsyn.shacl_engine.rules.PropertyConstraint;
+import no.difi.einnsyn.shacl_engine.violations.*;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.repository.RepositoryConnection;

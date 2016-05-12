@@ -1,11 +1,11 @@
-package no.difi.einnsyn.shacle_engine.rules.propertyconstraints;
+package no.difi.einnsyn.shacl_engine.rules.propertyconstraints;
 
 import no.difi.einnsyn.SHACL;
-import no.difi.einnsyn.shacle_engine.violations.*;
+import no.difi.einnsyn.shacl_engine.violations.*;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
-import org.openrdf.model.impl.SimpleLiteral;
+import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryConnection;
 
 import java.util.List;
@@ -15,14 +15,14 @@ import java.util.List;
  *
  *
  */
-public class Datatype extends MinMax {
+public class Class extends MinMax {
 
-    private IRI datatype;
+    private IRI class_property;
 
-    public Datatype(Resource object, RepositoryConnection shapes) {
+    public Class(Resource object, RepositoryConnection shapes) {
         super(object, shapes);
 
-        this.datatype = getExactlyOneIri(shapes, object, SHACL.datatype);
+        this.class_property = getExactlyOneIri(shapes, object, SHACL.class_property);
     }
 
     public void validate(Resource resource, List<Statement> list, ConstraintViolationHandler constraintViolationHandler,
@@ -30,32 +30,24 @@ public class Datatype extends MinMax {
 
         list.stream()
             .filter(statement -> statement.getPredicate().equals(predicate))
-            .filter(statement -> !(statement.getObject() instanceof SimpleLiteral))
-            .forEach(statement -> constraintViolationHandler.handle(
-                new ConstraintViolationDatatype(this, resource, "Not a literal", null))
-            );
+            .filter(statement -> (statement.getObject() instanceof Resource) &&
+                !(dataGraphConnection.hasStatement((Resource) statement.getObject(), RDF.TYPE, class_property, true)))
 
+            .forEach(statement -> constraintViolationHandler.handle(
+                new ConstraintViolationClass(this, resource, "Incorrect class type."))
+            );
 
         list.stream()
             .filter(statement -> statement.getPredicate().equals(predicate))
-            .filter(statement -> {
-                if (statement.getObject() instanceof SimpleLiteral) {
-                    if (!((SimpleLiteral) statement.getObject()).getDatatype().equals(datatype)) {
-                        return true;
-                    }
-                }
-                return false;
-            })
+            .filter(statement -> !(statement.getObject() instanceof Resource))
             .forEach(statement -> constraintViolationHandler.handle(
-                new ConstraintViolationDatatype(this, resource, "Mismatch for datatype",
-                    ((SimpleLiteral) statement.getObject()).getDatatype())
-            ));
+                new ConstraintViolationClass(this, resource, "Object is a literal, expected IRI."))
+            );
     }
 
     @Override
     public String toString() {
         return "PropertyConstraint{" +
-            "datatype=" + datatype +
             ", predicate=" + predicate +
             ", minCount=" + minCount +
             ", maxCount=" + maxCount +

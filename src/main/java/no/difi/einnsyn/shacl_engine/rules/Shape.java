@@ -1,8 +1,8 @@
-package no.difi.einnsyn.shacle_engine.rules;
+package no.difi.einnsyn.shacl_engine.rules;
 
 import info.aduna.iteration.Iterations;
 import no.difi.einnsyn.SHACL;
-import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationHandler;
+import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.vocabulary.RDF;

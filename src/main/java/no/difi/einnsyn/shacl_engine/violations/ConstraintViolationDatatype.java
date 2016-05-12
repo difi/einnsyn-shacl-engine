@@ -1,6 +1,6 @@
-package no.difi.einnsyn.shacle_engine.violations;
+package no.difi.einnsyn.shacl_engine.violations;
 
-import no.difi.einnsyn.shacle_engine.rules.PropertyConstraint;
+import no.difi.einnsyn.shacl_engine.rules.PropertyConstraint;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 

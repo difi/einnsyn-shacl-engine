@@ -1,4 +1,4 @@
-package no.difi.einnsyn.shacle_engine.violations;
+package no.difi.einnsyn.shacl_engine.violations;
 
 /**
  * Created by havardottestad on 04/05/16.

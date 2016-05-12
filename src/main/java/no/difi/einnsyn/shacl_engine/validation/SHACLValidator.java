@@ -1,8 +1,8 @@
-package no.difi.einnsyn.shacle_engine.validation;
+package no.difi.einnsyn.shacl_engine.validation;
 
 import no.difi.einnsyn.SHACL;
-import no.difi.einnsyn.shacle_engine.rules.Shape;
-import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationHandler;
+import no.difi.einnsyn.shacl_engine.rules.Shape;
+import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
 import org.openrdf.model.Statement;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.query.QueryResults;
@@ -72,7 +72,7 @@ public class SHACLValidator {
         inferencedRepository.initialize();
 
         try (RepositoryConnection inferencedConnection = inferencedRepository.getConnection()) {
-            
+
             try (RepositoryConnection dataConnection = data.getConnection()) {
                 inferencedConnection.add(dataConnection.getStatements(null, null, null));
             }

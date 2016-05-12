@@ -1,11 +1,11 @@
-package no.difi.einnsyn.shacle_engine.rules;
+package no.difi.einnsyn.shacl_engine.rules;
 
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.sesameutils.SesameUtils;
-import no.difi.einnsyn.shacle_engine.rules.propertyconstraints.Class;
-import no.difi.einnsyn.shacle_engine.rules.propertyconstraints.Datatype;
-import no.difi.einnsyn.shacle_engine.rules.propertyconstraints.MinMax;
-import no.difi.einnsyn.shacle_engine.violations.*;
+import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.Class;
+import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.Datatype;
+import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.MinMax;
+import no.difi.einnsyn.shacl_engine.violations.*;
 import org.apache.commons.lang.NotImplementedException;
 import org.openrdf.model.*;
 import org.openrdf.model.impl.SimpleLiteral;

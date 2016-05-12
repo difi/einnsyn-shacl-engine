@@ -1,9 +1,9 @@
-package no.difi.einnsyn.shacle_engine.validation;
+package no.difi.einnsyn.shacl_engine.validation;
 
 import no.difi.einnsyn.sesameutils.SesameUtils;
-import no.difi.einnsyn.shacle_engine.violations.ConstraintViolation;
-import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationClass;
-import no.difi.einnsyn.shacle_engine.violations.ConstraintViolationDatatype;
+import no.difi.einnsyn.shacl_engine.violations.ConstraintViolation;
+import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationClass;
+import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationDatatype;
 import org.junit.Test;
 import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.model.vocabulary.RDF;
