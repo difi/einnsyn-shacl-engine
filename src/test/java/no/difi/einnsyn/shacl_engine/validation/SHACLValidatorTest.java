@@ -233,6 +233,18 @@ public class SHACLValidatorTest {
     }
 
     @Test
+    public void simpleShacleDatetimeInDateViolation() throws Exception {
+        String dir = "simpleShacleDatetimeInDateViolation";
+
+        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), null);
+
+        assertFalse(shaclValidator.validate(
+            getData(dir),
+            System.out::println
+        ));
+    }
+
+    @Test
     public void simpleShacleMinDatatypeViolation() throws Exception {
         String dir = "simpleShacleMinDatatypeViolation";
 
