@@ -35,8 +35,11 @@ public abstract class PropertyConstraint {
                                      ConstraintViolationHandler constraintViolationHandler,
                                      RepositoryConnection dataGraphConnection);
 
+    public IRI getPredicate() {
+        return this.predicate;
+    }
 
-      protected IRI getExactlyOneIri(RepositoryConnection repositoryConnection, Resource object, IRI property) {
+    protected IRI getExactlyOneIri(RepositoryConnection repositoryConnection, Resource object, IRI property) {
         RepositoryResult<Statement> statements = repositoryConnection.getStatements(object, property, null);
         Statement classPropertyStatement = statements.next();
         IRI classObject = (IRI) classPropertyStatement.getObject();

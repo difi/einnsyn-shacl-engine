@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 
 /**
  * Created by veronika on 4/28/16.
+ *
+ *
  */
 public class SHACLValidator {
 
