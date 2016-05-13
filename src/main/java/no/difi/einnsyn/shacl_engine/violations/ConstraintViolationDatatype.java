@@ -1,6 +1,8 @@
 package no.difi.einnsyn.shacl_engine.violations;
 
+import no.difi.einnsyn.SHACLExt;
 import no.difi.einnsyn.shacl_engine.rules.PropertyConstraint;
+import no.difi.einnsyn.shacl_engine.validation.results.ValidationResults;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 
@@ -19,6 +21,9 @@ public class ConstraintViolationDatatype extends ConstraintViolation {
 
     @Override
     public String toString() {
+
+        new ValidationResults((IRI) resource, propertyConstraint.getPredicate(), SHACLExt.none, actualDatatype, message);
+
         return "ConstraintViolationDatatype{" +
             "propertyConstraint=" + propertyConstraint +
             ", resource=" + resource +

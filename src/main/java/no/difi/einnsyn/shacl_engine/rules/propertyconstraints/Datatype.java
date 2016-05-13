@@ -1,6 +1,8 @@
 package no.difi.einnsyn.shacl_engine.rules.propertyconstraints;
 
 import no.difi.einnsyn.SHACL;
+import no.difi.einnsyn.SHACLExt;
+import no.difi.einnsyn.shacl_engine.validation.results.ValidationResults;
 import no.difi.einnsyn.shacl_engine.violations.*;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
@@ -23,6 +25,10 @@ public class Datatype extends MinMax {
         super(object, shapes);
 
         this.datatype = getExactlyOneIri(shapes, object, SHACL.datatype);
+    }
+
+    public IRI getDatatype() {
+        return this.datatype;
     }
 
     public void validate(Resource resource, List<Statement> list, ConstraintViolationHandler constraintViolationHandler,
@@ -54,6 +60,7 @@ public class Datatype extends MinMax {
 
     @Override
     public String toString() {
+
         return "PropertyConstraint{" +
             "datatype=" + datatype +
             ", predicate=" + predicate +
