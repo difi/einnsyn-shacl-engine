@@ -9,7 +9,11 @@ import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.repository.Repository;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.sail.memory.MemoryStore;
 
 /**
  * Created by veronika on 5/13/16.
@@ -77,32 +81,34 @@ public class ValidationResults {
 
     }
 
-    private Model buildValidationResults() {
-        Model validationResults = new LinkedHashModel();
+    private Repository buildValidationResults() {
+
+        Repository repository = new SailRepository(new MemoryStore());
+        repository.initialize();
+
+        RepositoryConnection connection = repository.getConnection();
 
         ValueFactory factory = SimpleValueFactory.getInstance();
         IRI resultSubject = factory.createIRI(SHACL.NS + "ExampleValidationResults" + this.focusNode.getLocalName());
 
-        validationResults.add(resultSubject, RDF.TYPE, SHACL.ValidationResult);
-        validationResults.add(resultSubject, SHACL.severity, this.severity);
-        validationResults.add(resultSubject, SHACL.focusNode, this.focusNode);
-        validationResults.add(resultSubject, SHACL.subject, this.subject);
-        validationResults.add(resultSubject, SHACL.predicate, this.predicate);
+        connection.add(resultSubject, RDF.TYPE, SHACL.ValidationResult);
+        connection.add(resultSubject, SHACL.severity, this.severity);
+        connection.add(resultSubject, SHACL.focusNode, this.focusNode);
+        connection.add(resultSubject, SHACL.subject, this.subject);
+        connection.add(resultSubject, SHACL.predicate, this.predicate);
         if (this.object != null) {
-            validationResults.add(resultSubject, SHACL.object, this.object);
+            connection.add(resultSubject, SHACL.object, this.object);
         }
-        validationResults.add(resultSubject, SHACLExt.expected, this.expected);
-        validationResults.add(resultSubject, SHACLExt.actual, this.actual);
-        validationResults.add(resultSubject, SHACL.message, factory.createLiteral(this.message));
+        connection.add(resultSubject, SHACLExt.expected, this.expected);
+        connection.add(resultSubject, SHACLExt.actual, this.actual);
+        connection.add(resultSubject, SHACL.message, factory.createLiteral(this.message));
 
-        return validationResults;
+        return repository;
     }
 
     private void printValidationResults() {
-        Model model = buildValidationResults();
-        if (model != null) {
-            System.out.println(SesameUtils.modelToString(model, RDFFormat.TURTLE));
-        }
-    }
 
+        Repository repository = buildValidationResults();
+        System.out.println(SesameUtils.repositoryToString(repository, RDFFormat.TURTLE));
+    }
 }
