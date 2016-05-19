@@ -22,15 +22,12 @@ import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
 import org.openrdf.sail.memory.MemoryStore;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Created by veronika on 4/28/16.
- *
- *
  */
 public class SHACLValidator {
 
@@ -98,7 +95,7 @@ public class SHACLValidator {
         Model inferenced = ModelFactory.createDefaultModel();
 
         StmtIterator stmtIterator = infModel.listStatements();
-        while(stmtIterator.hasNext()){
+        while (stmtIterator.hasNext()) {
             inferenced.add(stmtIterator.nextStatement());
         }
 
@@ -106,22 +103,16 @@ public class SHACLValidator {
         inferenced.write(stringWriter, "NTRIPLES");
 
 
-        try {
-            Repository repository = SesameUtils.stringToRepository(stringWriter.toString(), RDFFormat.NTRIPLES);
-            long after = System.currentTimeMillis();
-            System.out.println("Reasoning took: " + (after - before));
+        Repository repository = SesameUtils.stringToRepository(stringWriter.toString(), RDFFormat.NTRIPLES);
+        long after = System.currentTimeMillis();
+        System.out.println("Reasoning took: " + (after - before));
 
-            return repository;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return repository;
 
-
-        return null;
     }
 
 
-        private static Repository addInferencing(Repository data, Repository ontology) {
+    private static Repository addInferencing(Repository data, Repository ontology) {
         Repository inferencedRepository = new SailRepository(new ForwardChainingRDFSInferencer(new MemoryStore()));
         inferencedRepository.initialize();
 
