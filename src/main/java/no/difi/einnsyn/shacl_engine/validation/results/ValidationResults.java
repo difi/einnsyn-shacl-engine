@@ -100,7 +100,9 @@ public class ValidationResults {
             connection.add(resultSubject, SHACL.object, this.object);
         }
         connection.add(resultSubject, SHACLExt.expected, this.expected);
-        connection.add(resultSubject, SHACLExt.actual, this.actual);
+        if(this.actual != null){
+            connection.add(resultSubject, SHACLExt.actual, this.actual);
+        }
         connection.add(resultSubject, SHACL.message, factory.createLiteral(this.message));
 
         return repository;
