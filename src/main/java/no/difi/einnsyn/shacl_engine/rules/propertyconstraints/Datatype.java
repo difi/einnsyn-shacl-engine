@@ -2,8 +2,8 @@ package no.difi.einnsyn.shacl_engine.rules.propertyconstraints;
 
 import com.complexible.common.rdf.model.StardogValueFactory;
 import no.difi.einnsyn.SHACL;
-import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationDatatype;
-import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
+import no.difi.einnsyn.sesameutils.SesameUtils;
+import no.difi.einnsyn.shacl_engine.violations.*;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -14,6 +14,8 @@ import java.util.List;
 
 /**
  * Created by havardottestad on 04/05/16.
+ *
+ *
  */
 public class Datatype extends MinMax {
 
@@ -22,7 +24,7 @@ public class Datatype extends MinMax {
     public Datatype(Resource object, RepositoryConnection shapes) {
         super(object, shapes);
 
-        this.datatype = getExactlyOneIri(shapes, object, SHACL.datatype);
+        this.datatype = SesameUtils.getExactlyOneIri(shapes, object, SHACL.datatype);
     }
 
     public IRI getDatatype() {

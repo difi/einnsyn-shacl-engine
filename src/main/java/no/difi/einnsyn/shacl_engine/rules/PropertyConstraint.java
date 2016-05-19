@@ -39,35 +39,6 @@ public abstract class PropertyConstraint {
         return this.predicate;
     }
 
-    protected IRI getExactlyOneIri(RepositoryConnection repositoryConnection, Resource object, IRI property) {
-        RepositoryResult<Statement> statements = repositoryConnection.getStatements(object, property, null);
-        Statement classPropertyStatement = statements.next();
-        IRI classObject = (IRI) classPropertyStatement.getObject();
-
-        if (statements.hasNext()) {
-            throw new IllegalArgumentException("There may only be one value for property <" + property.toString() + ">");
-        }
-        return classObject;
-    }
-
-    protected Optional<Integer> getOptionalOneInteger(RepositoryConnection repositoryConnection, Resource object, IRI property) {
-        RepositoryResult<Statement> statements = repositoryConnection.getStatements(object, property, null);
-
-        if(statements.hasNext()) {
-           Statement classPropertyStatement = statements.next();
-           Integer classObject = ((SimpleLiteral) classPropertyStatement.getObject()).intValue();
-
-           if(statements.hasNext()) {
-               throw new IllegalArgumentException("There may only be one integer value for property <" + property.toString() + ">");
-           }
-
-           return Optional.of(classObject);
-        }
-
-        return Optional.empty();
-
-    }
-
     static class Factory {
 
         static PropertyConstraint create(Resource object, RepositoryConnection shapesConnection) {

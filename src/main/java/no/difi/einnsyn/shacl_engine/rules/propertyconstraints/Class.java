@@ -1,6 +1,7 @@
 package no.difi.einnsyn.shacl_engine.rules.propertyconstraints;
 
 import no.difi.einnsyn.SHACL;
+import no.difi.einnsyn.sesameutils.SesameUtils;
 import no.difi.einnsyn.shacl_engine.violations.*;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
@@ -22,7 +23,7 @@ public class Class extends MinMax {
     public Class(Resource object, RepositoryConnection shapes) {
         super(object, shapes);
 
-        this.class_property = getExactlyOneIri(shapes, object, SHACL.class_property);
+        this.class_property = SesameUtils.getExactlyOneIri(shapes, object, SHACL.class_property);
     }
 
     public void validate(Resource resource, List<Statement> list, ConstraintViolationHandler constraintViolationHandler,
