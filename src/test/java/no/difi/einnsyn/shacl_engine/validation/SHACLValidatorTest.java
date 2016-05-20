@@ -43,9 +43,7 @@ public class SHACLValidatorTest {
 
         SHACLValidator shaclValidator = new SHACLValidator(null, null);
         assertFalse(shaclValidator.validate(null, null));
-
     }
-
 
     @Test
     public void validateEmptyRule() throws Exception {
@@ -57,155 +55,16 @@ public class SHACLValidatorTest {
             violation -> {
             }
         ));
-
     }
 
 
-    @Test
-    public void validateSimpleViolationMin() throws Exception {
 
-        String dir = "testData/minCount1";
-
-
-        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), null);
-
-
-        assertFalse(shaclValidator.validate(
-            getData(dir+"/fail"),
-            violation -> {
-            }
-        ));
-
-    }
-
-    @Test
-    public void validateSimpleViolationMax5() throws Exception {
-        String dir = "testData/maxCount5";
-
-        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), null);
-
-
-        assertFalse(shaclValidator.validate(
-            getData(dir+"/fail"),
-            violation -> {
-            }
-        ));
-
-    }
-
-    @Test
-    public void validateSimplePassMax5() throws Exception {
-        String dir = "testData/maxCount5";
-
-        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), null);
-
-
-        assertTrue(shaclValidator.validate(
-            getData(dir+"/pass"),
-            violation -> {
-            }
-        ));
-
-    }
-
-
-    @Test
-    public void simpleShaclePassBasedOnClass() throws Exception {
-        String dir = "testData/validateAgainstScopeClass";
-
-        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), null);
-
-
-        assertTrue(shaclValidator.validate(
-            getData(dir+"/pass"),
-            violation -> {
-            }
-        ));
-
-    }
-
-
-    @Test
-    public void simpleShacleViolationMinBig() throws Exception {
-        String dir = "testData/bigFile";
-
-        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), null);
-
-
-        assertTrue(shaclValidator.validate(
-            getData(dir+"/pass"),
-            violation -> {
-            }
-        ));
-
-    }
-
-
-    @Test
-    public void simpleShacleMinDatatypePass() throws Exception {
-        String dir = "testData/datatypeStringVsLangString";
-
-        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), null);
-
-
-        assertTrue(shaclValidator.validate(
-            getData(dir+"/pass"),
-            violation -> {
-            }
-        ));
-
-    }
-
-    @Test
-    public void simpleShaclClassViolation() throws Exception {
-        String dir = "testData/simpleClass";
-
-        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), null);
-
-
-        assertFalse(shaclValidator.validate(
-                getData(dir+"/fail"),
-                violation -> {
-                }
-        ));
-
-    }
-
-    @Test
-    public void simpleShaclClassPass() throws Exception {
-        String dir = "testData/simpleClass";
-
-        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), null);
-
-
-        assertTrue(shaclValidator.validate(
-                getData(dir+"/pass"),
-                violation -> {
-                }
-        ));
-
-    }
-
-    @Test
-    public void simpleShaclClassBlankNodePass() throws Exception {
-        String dir = "testData/classBlankNode";
-
-        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), null);
-
-
-        assertTrue(shaclValidator.validate(
-            getData(dir+"/pass"),
-            violation -> {
-            }
-        ));
-
-    }
 
     @Test
     public void simpleShaclClassViolation2() throws Exception {
         String dir = "testData/simpleClass";
 
-        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), null);
+        SHACLValidator shaclValidator = new SHACLValidator(getShacl(dir), null);
         Shape shape = shaclValidator.shapes.get(0);
         
         List<ConstraintViolation> violations = new ArrayList<>();
@@ -253,7 +112,7 @@ public class SHACLValidatorTest {
     public void simpleShacleDatetimeInDateViolation() throws Exception {
         String dir = "testData/datetimeIndate";
 
-        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), null);
+        SHACLValidator shaclValidator = new SHACLValidator(getShacl(dir), null);
 
         List<ConstraintViolation> violations = new ArrayList<>();
 
@@ -263,7 +122,7 @@ public class SHACLValidatorTest {
         ));
 
         assertFalse(shaclValidator.validate(
-            getData(dir),
+            getData(dir+"/fail"),
             violation -> {
                 violations.add(violation);
                 System.out.println(violation);
@@ -290,7 +149,7 @@ public class SHACLValidatorTest {
     public void simpleShacleMinDatatypeViolation() throws Exception {
         String dir = "testData/datatypeStringVsLangString";
 
-        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), null);
+        SHACLValidator shaclValidator = new SHACLValidator(getShacl(dir), null);
 
 
         List<ConstraintViolation> violations = new ArrayList<>();
@@ -332,95 +191,22 @@ public class SHACLValidatorTest {
         System.out.println(jsonElement);
     }
 
-    @Test
-    public void simpleShacleMinDatatypeViolation2() throws Exception {
-        String dir = "testData/datatypeStringVsLangString";
-
-        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), null);
 
 
-        new ArrayList<String>().stream().collect(Collectors.toList());
-
-
-        assertFalse(shaclValidator.validate(
-            getData(dir+"/fail2"),
-            (error) -> {
-            }
-
-        ));
-
-    }
-
-    @Test
-    public void simpleShacleMinInferencePass() throws Exception {
-        String dir = "testData/minCountWithInference";
-
-        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), getOntology(dir+"/pass"));
-
-
-        new ArrayList<String>().stream().collect(Collectors.toList());
-
-
-        assertTrue(shaclValidator.validate(
-            getData(dir+"/pass"),
-            (error) -> {
-            }
-
-        ));
-
-    }
-
-    @Test
-    public void simpleShacleMinInferenceViolation() throws Exception {
-        String dir = "testData/minCountWithInference";
-
-        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), getOntology(dir+"/fail"));
-
-
-        new ArrayList<String>().stream().collect(Collectors.toList());
-
-
-        assertFalse(shaclValidator.validate(
-            getData(dir+"/fail"),
-            (error) -> {
-                System.err.println(error);
-            }
-
-        ));
-
-    }
-
-    @Test
-    public void simpleShaclClassInferencePass() throws Exception {
-        String dir = "testData/classInference";
-
-        SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), getOntology(dir+"/pass"));
-
-
-        new ArrayList<String>().stream().collect(Collectors.toList());
-
-
-        assertTrue(shaclValidator.validate(
-            getData(dir+"/pass"),
-            System.err::println
-        ));
-
-    }
-
-    private Repository getData(String simpleShacleViolation) throws IOException {
-        InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(simpleShacleViolation + "/data.ttl");
+    private Repository getData(String simpleShaclViolation) throws IOException {
+        InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(simpleShaclViolation + "/data.ttl");
 
         return SesameUtils.streamToRepository(resourceAsStream, RDFFormat.TURTLE);
     }
 
-    private Repository getShacle(String simpleShacleViolation) throws IOException {
-        InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(simpleShacleViolation + "/shacl.ttl");
+    private Repository getShacl(String simpleShaclViolation) throws IOException {
+        InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(simpleShaclViolation + "/shacl.ttl");
 
         return SesameUtils.streamToRepository(resourceAsStream, RDFFormat.TURTLE);
     }
 
-    private Repository getOntology(String simpleShacleViolation) throws IOException {
-        InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(simpleShacleViolation + "/ontology.ttl");
+    private Repository getOntology(String simpleShaclViolation) throws IOException {
+        InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(simpleShaclViolation + "/ontology.ttl");
 
         return SesameUtils.streamToRepository(resourceAsStream, RDFFormat.TURTLE);
     }
