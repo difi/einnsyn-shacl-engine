@@ -122,8 +122,9 @@ public class SHACLValidatorTest {
                     String message = asJsonObject.get("message").getAsString();
                     assertEquals("", "Object is a literal, expected IRI.", message);
 
+                    System.out.println(jsonElement);
                     assertEquals("",
-                        "{\"@id\":\"http://example.org/1377d24e-8c36-4ecf-b43e-4a5cdbe9a256\",\"@type\":\"shacl:ValidationResult\",\"focusNode\":\"http://example.org/1\",\"message\":\"Object is a literal, expected IRI.\",\"object\":\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/Journalpoststatus\",\"predicate\":\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/journalpoststatus\",\"severity\":\"shacl:Violation\",\"subject\":\"http://example.org/1\"}".replaceAll("\\{\"@id\":(.*?),",""),
+                        "{\"@id\":\"http://example.org/9d78e4eb-6684-4ea8-b73a-49d52dd66587\",\"@type\":\"shacl:ValidationResult\",\"actual\":\"utfort\",\"expected\":\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/Journalpoststatus\",\"focusNode\":\"http://example.org/1\",\"message\":\"Object is a literal, expected IRI.\",\"object\":\"utfort\",\"predicate\":\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/journalpoststatus\",\"severity\":\"shacl:Violation\",\"subject\":\"http://example.org/1\"}".replaceAll("\\{\"@id\":(.*?),",""),
                         jsonElement.toString().replaceAll("\\{\"@id\":(.*?),","")
                     );
 
