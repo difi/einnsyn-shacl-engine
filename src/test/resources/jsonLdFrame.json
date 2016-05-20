@@ -7,9 +7,9 @@
     "subject": {"@id":"shacl:subject", "@type":"@id"},
     "predicate": {"@id":"shacl:predicate", "@type":"@id"},
     "message": {"@id":"shacl:message"},
-    "object": {"@id":"shacl:object", "@type":"@id"},
-    "actual": {"@id":"shacl-ext:actual", "@type":"@id"},
-    "expected": {"@id":"shacl-ext:expected", "@type":"@id"}
+    "object": {"@id":"shacl:object"},
+    "actual": {"@id":"shacl-ext:actual"},
+    "expected": {"@id":"shacl-ext:expected"}
   },
   "@explicit": true,
   "@type":"shacl:ValidationResult",

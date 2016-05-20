@@ -30,8 +30,8 @@ public class ConstraintViolationMaxCount extends ConstraintViolation {
         List<Statement> statements = super.validationResults();
 
         if (maxCount.isPresent()) {
-            statements.add(factory.createStatement(validationResultsIri, SHACLExt.expected, factory.createLiteral(maxCount.get())));
-            statements.add(factory.createStatement(validationResultsIri, SHACLExt.actual, factory.createLiteral(actual)));
+            statements.add(factory.createStatement(validationResultsIri, SHACLExt.expected, factory.createLiteral(maxCount.get() + "")));
+            statements.add(factory.createStatement(validationResultsIri, SHACLExt.actual, factory.createLiteral(actual + "")));
         }
 
         return statements;
