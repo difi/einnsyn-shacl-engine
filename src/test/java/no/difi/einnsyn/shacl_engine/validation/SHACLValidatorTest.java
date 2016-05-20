@@ -57,7 +57,38 @@ public class SHACLValidatorTest {
         ));
     }
 
+    @Test
+    public void minCountTest() throws Exception {
+        String dir = "testData/minCount1";
 
+        SHACLValidator shaclValidator = new SHACLValidator(getShacl(dir), null);
+        Shape shape = shaclValidator.shapes.get(0);
+
+        List<ConstraintViolation> violations = new ArrayList<>();
+
+        assertFalse(shaclValidator.validate(
+            getData(dir+"/fail"),
+            violation -> {
+                violations.add(violation);
+                System.out.println(violation);
+
+                try {
+                    JsonElement jsonElement = violation.toJson();
+                    JsonObject asJsonObject = jsonElement.getAsJsonObject();
+
+                    assertEquals("", "1", asJsonObject.get("expected").getAsString());
+                    assertEquals("", "0", asJsonObject.get("actual").getAsString());
+
+                } catch (JsonLdError jsonLdError) {
+                    assertTrue(jsonLdError.getMessage(), false);
+                }
+
+
+            }
+        ));
+
+
+    }
 
 
     @Test

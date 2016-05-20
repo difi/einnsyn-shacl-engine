@@ -18,11 +18,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
-public class SHACLValidatorTest2 {
+public class SHACLValidatorTestAllTestData {
 
     String path;
 
-    public SHACLValidatorTest2(String path) {
+    public SHACLValidatorTestAllTestData(String path) {
         this.path = path;
     }
 

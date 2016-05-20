@@ -74,7 +74,6 @@ public class ConstraintViolation {
         writer.endRDF();
 
         String jsonld = stringWriter.toString();
-        System.out.println(jsonld);
 
         try {
             Object jsonLdObject = JsonUtils.fromString(jsonld);
