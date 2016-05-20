@@ -74,11 +74,9 @@ public class SHACLValidatorTest2 {
 
             if (getData(realPath) != null) {
                 System.out.println("Testing: " + realPath);
-                SHACLValidator shaclValidator = new SHACLValidator(getShacle(path), getOntology(realPath));
+                SHACLValidator shaclValidator = new SHACLValidator(getShacl(path), getOntology(realPath));
 
-                assertEquals("", shouldPass, shaclValidator.validate(getData(realPath), (violation) -> {
-                    System.out.println(violation);
-                }));
+                assertEquals("", shouldPass, shaclValidator.validate(getData(realPath), System.out::println));
 
                 ranAtLeastOneTest = true;
 
@@ -88,15 +86,15 @@ public class SHACLValidatorTest2 {
     }
 
 
-    private Repository getShacle(String simpleShacleViolation) throws IOException {
-        InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(TEST_DATA + simpleShacleViolation + "/shacl.ttl");
+    private Repository getShacl(String simpleShaclViolation) throws IOException {
+        InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(TEST_DATA + simpleShaclViolation + "/shacl.ttl");
 
         return SesameUtils.streamToRepository(resourceAsStream, RDFFormat.TURTLE);
     }
 
 
-    private Repository getOntology(String simpleShacleViolation) throws IOException {
-        InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(TEST_DATA + simpleShacleViolation + "/ontology.ttl");
+    private Repository getOntology(String simpleShaclViolation) throws IOException {
+        InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(TEST_DATA + simpleShaclViolation + "/ontology.ttl");
         if (resourceAsStream == null) {
             return null;
         }
@@ -104,8 +102,8 @@ public class SHACLValidatorTest2 {
         return SesameUtils.streamToRepository(resourceAsStream, RDFFormat.TURTLE);
     }
 
-    private Repository getData(String simpleShacleViolation) throws IOException {
-        InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(TEST_DATA + simpleShacleViolation + "/data.ttl");
+    private Repository getData(String simpleShaclViolation) throws IOException {
+        InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(TEST_DATA + simpleShaclViolation + "/data.ttl");
 
         if (resourceAsStream == null) {
             return null;
