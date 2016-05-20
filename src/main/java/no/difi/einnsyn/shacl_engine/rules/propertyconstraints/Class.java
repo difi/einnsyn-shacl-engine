@@ -39,14 +39,14 @@ public class Class extends MinMax {
                 !(dataGraphConnection.hasStatement((Resource) statement.getObject(), RDF.TYPE, class_property, true)))
 
             .forEach(statement -> constraintViolationHandler.handle(
-                new ConstraintViolationClass(this, resource, "Incorrect class type."))
+                new ConstraintViolationClass(this, resource, "Incorrect class type.", statement))
             );
 
         list.stream()
             .filter(statement -> statement.getPredicate().equals(predicate))
             .filter(statement -> !(statement.getObject() instanceof Resource))
             .forEach(statement -> constraintViolationHandler.handle(
-                new ConstraintViolationClass(this, resource, "Object is a literal, expected IRI."))
+                new ConstraintViolationClass(this, resource, "Object is a literal, expected IRI.", statement))
             );
     }
 

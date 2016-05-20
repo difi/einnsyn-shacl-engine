@@ -38,7 +38,7 @@ public class Datatype extends MinMax {
             .filter(statement -> statement.getPredicate().equals(predicate))
             .filter(statement -> !(statement.getObject() instanceof SimpleLiteral))
             .forEach(statement -> constraintViolationHandler.handle(
-                new ConstraintViolationDatatype(this, resource, "Not a literal", null))
+                new ConstraintViolationDatatype(this, resource, "Not a literal", statement, null))
             );
 
 
@@ -54,7 +54,7 @@ public class Datatype extends MinMax {
             })
             .forEach(statement -> constraintViolationHandler.handle(
                 new ConstraintViolationDatatype(this, resource, "Mismatch for datatype",
-                    ((SimpleLiteral) statement.getObject()).getDatatype())
+                    statement, ((SimpleLiteral) statement.getObject()).getDatatype())
             ));
 
 
@@ -65,7 +65,7 @@ public class Datatype extends MinMax {
             .filter(statement -> statement.getObject().stringValue().contains("T"))
             .forEach(statement -> constraintViolationHandler.handle(
                 new ConstraintViolationDatatype(this, resource, "Datetime found in xsd:date field",
-                    ((SimpleLiteral) statement.getObject()).getDatatype())
+                    statement, ((SimpleLiteral) statement.getObject()).getDatatype())
             ));
     }
 

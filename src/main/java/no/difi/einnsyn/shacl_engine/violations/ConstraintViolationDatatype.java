@@ -12,12 +12,12 @@ import java.util.List;
  *
  *
  */
-public class ConstraintViolationDatatype extends ConstraintViolation {
+public class ConstraintViolationDatatype extends ConstraintViolationWithStatement {
     private final IRI actualDatatype;
     private final IRI expectedDatatype;
 
-    public ConstraintViolationDatatype(Datatype propertyConstraint, Resource resource, String s, IRI actualDatatype) {
-        super(propertyConstraint, resource, s);
+    public ConstraintViolationDatatype(Datatype propertyConstraint, Resource resource, String s, Statement failingStatement, IRI actualDatatype) {
+        super(propertyConstraint, resource, s, failingStatement);
         this.actualDatatype = actualDatatype;
         this.expectedDatatype = propertyConstraint.getDatatype();
     }

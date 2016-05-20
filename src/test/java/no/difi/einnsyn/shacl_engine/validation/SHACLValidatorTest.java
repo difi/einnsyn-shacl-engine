@@ -4,6 +4,7 @@ import com.github.jsonldjava.core.JsonLdError;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import no.difi.einnsyn.Arkiv;
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.SHACLExt;
 import no.difi.einnsyn.sesameutils.SesameUtils;
@@ -27,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -115,6 +115,10 @@ public class SHACLValidatorTest {
 
                     JsonObject asJsonObject = jsonElement.getAsJsonObject();
 
+                    assertEquals("", "utfort", asJsonObject.get("object").getAsString());
+                    assertEquals("", "utfort", asJsonObject.get("actual").getAsString());
+                    //assertEquals("", Arkiv.Journalpoststatus.toString(), asJsonObject.get("expected").getAsString());
+
                     String message = asJsonObject.get("message").getAsString();
                     assertEquals("", "Object is a literal, expected IRI.", message);
 
@@ -122,6 +126,8 @@ public class SHACLValidatorTest {
                         "{\"@id\":\"http://example.org/1377d24e-8c36-4ecf-b43e-4a5cdbe9a256\",\"@type\":\"shacl:ValidationResult\",\"focusNode\":\"http://example.org/1\",\"message\":\"Object is a literal, expected IRI.\",\"object\":\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/Journalpoststatus\",\"predicate\":\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/journalpoststatus\",\"severity\":\"shacl:Violation\",\"subject\":\"http://example.org/1\"}".replaceAll("\\{\"@id\":(.*?),",""),
                         jsonElement.toString().replaceAll("\\{\"@id\":(.*?),","")
                     );
+
+
 
                     System.out.println(jsonElement);
                 }
@@ -132,7 +138,7 @@ public class SHACLValidatorTest {
         List<PropertyConstraint> properties = (List<PropertyConstraint>) ReflectionTestUtils.getField(shape, "properties");
 
         List<ConstraintViolation> expectedViolations = new ArrayList<>();
-        expectedViolations.add(new ConstraintViolationClass(((Class) properties.get(0)), instance.createIRI("http://example.org/1"), "Object is a literal, expected IRI."));
+        expectedViolations.add(new ConstraintViolationClass(((Class) properties.get(0)), instance.createIRI("http://example.org/1"), "Object is a literal, expected IRI.", null));
 
         assertEquals("", expectedViolations.size(), violations.size());
         assertTrue("", violations.containsAll(expectedViolations));
@@ -200,7 +206,7 @@ public class SHACLValidatorTest {
         List<PropertyConstraint> properties = (List<PropertyConstraint>) ReflectionTestUtils.getField(shape, "properties");
 
         List<ConstraintViolation> expectedViolations = new ArrayList<>();
-        expectedViolations.add(new ConstraintViolationDatatype(((Datatype) properties.get(0)), instance.createIRI("http://example.org/1"), null, RDF.LANGSTRING));
+        expectedViolations.add(new ConstraintViolationDatatype(((Datatype) properties.get(0)), instance.createIRI("http://example.org/1"), null, null, RDF.LANGSTRING));
 
         assertTrue("", violations.containsAll(expectedViolations));
         assertTrue("", expectedViolations.containsAll(violations));
