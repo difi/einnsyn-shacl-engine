@@ -32,7 +32,7 @@ public class ConstraintViolationClass extends ConstraintViolationWithStatement {
     public List<Statement> validationResults() {
         List<Statement> statements = super.validationResults();
 
-        statements.add(factory.createStatement(validationResultsIri, SHACLExt.expected, class_property));
+        statements.add(factory.createStatement(validationResultsIri, SHACLExt.expected, factory.createLiteral(class_property.toString())));
         statements.add(factory.createStatement(validationResultsIri, SHACLExt.actual, failingStatement.getObject()));
 
         return statements;
