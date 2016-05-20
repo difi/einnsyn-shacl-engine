@@ -1,6 +1,5 @@
 package no.difi.einnsyn.shacl_engine.rules.propertyconstraints;
 
-import com.complexible.common.rdf.model.StardogValueFactory;
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.sesameutils.SesameUtils;
 import no.difi.einnsyn.shacl_engine.violations.*;
@@ -8,6 +7,7 @@ import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.impl.SimpleLiteral;
+import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.repository.RepositoryConnection;
 
 import java.util.List;
@@ -61,7 +61,7 @@ public class Datatype extends MinMax {
         list.stream()
             .filter(statement -> statement.getPredicate().equals(predicate))
             .filter(statement -> statement.getObject() instanceof SimpleLiteral)
-            .filter(statement -> datatype.equals(StardogValueFactory.XSD.DATE))
+            .filter(statement -> datatype.equals(XMLSchema.DATE))
             .filter(statement -> statement.getObject().stringValue().contains("T"))
             .forEach(statement -> constraintViolationHandler.handle(
                 new ConstraintViolationDatatype(this, resource, "Datetime found in xsd:date field",

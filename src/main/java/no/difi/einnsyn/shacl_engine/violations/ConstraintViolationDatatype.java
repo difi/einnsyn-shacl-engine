@@ -1,10 +1,11 @@
 package no.difi.einnsyn.shacl_engine.violations;
 
 import no.difi.einnsyn.SHACLExt;
-import no.difi.einnsyn.shacl_engine.rules.PropertyConstraint;
-import no.difi.einnsyn.shacl_engine.validation.results.ValidationResults;
+import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.Datatype;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+import java.util.List;
 
 /**
  * Created by havardottestad on 06/05/16.
@@ -13,16 +14,16 @@ import org.openrdf.model.Resource;
  */
 public class ConstraintViolationDatatype extends ConstraintViolation {
     private final IRI actualDatatype;
+    private final IRI expectedDatatype;
 
-    public ConstraintViolationDatatype(PropertyConstraint propertyConstraint, Resource resource, String s, IRI actualDatatype) {
+    public ConstraintViolationDatatype(Datatype propertyConstraint, Resource resource, String s, IRI actualDatatype) {
         super(propertyConstraint, resource, s);
         this.actualDatatype = actualDatatype;
+        this.expectedDatatype = propertyConstraint.getDatatype();
     }
 
     @Override
     public String toString() {
-
-        new ValidationResults((IRI) resource, propertyConstraint.getPredicate(), SHACLExt.none, actualDatatype, message);
 
         return "ConstraintViolationDatatype{" +
             "propertyConstraint=" + propertyConstraint +
@@ -30,6 +31,17 @@ public class ConstraintViolationDatatype extends ConstraintViolation {
             ", message='" + message + '\'' +
             ", actualDatatype=" + actualDatatype +
             '}';
+    }
+
+
+    @Override
+    public List<Statement> validationResults() {
+        List<Statement> statements = super.validationResults();
+
+        statements.add(factory.createStatement(validationResultsIri, SHACLExt.actual, actualDatatype));
+        statements.add(factory.createStatement(validationResultsIri, SHACLExt.expected, expectedDatatype));
+
+        return statements;
     }
 
     @Override

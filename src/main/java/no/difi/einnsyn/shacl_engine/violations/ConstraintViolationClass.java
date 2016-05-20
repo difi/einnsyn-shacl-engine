@@ -1,7 +1,12 @@
 package no.difi.einnsyn.shacl_engine.violations;
 
-import no.difi.einnsyn.shacl_engine.rules.PropertyConstraint;
+import no.difi.einnsyn.SHACL;
+import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.Class;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+
+import java.util.List;
 
 /**
  * Created by veronika on 5/10/16.
@@ -9,8 +14,24 @@ import org.openrdf.model.Resource;
  *
  */
 public class ConstraintViolationClass extends ConstraintViolation {
-    public ConstraintViolationClass(PropertyConstraint propertyConstraint, Resource resource, String message) {
+
+    private IRI class_property;
+
+    public ConstraintViolationClass(Class propertyConstraint, Resource resource, String message) {
         super(propertyConstraint, resource, message);
+
+        if (propertyConstraint.getClassProperty() != null) {
+            this.class_property = propertyConstraint.getClassProperty();
+        }
+    }
+
+    @Override
+    public List<Statement> validationResults() {
+        List<Statement> statements = super.validationResults();
+
+        statements.add(factory.createStatement(validationResultsIri, SHACL.object, class_property));
+
+        return statements;
     }
 
     @Override

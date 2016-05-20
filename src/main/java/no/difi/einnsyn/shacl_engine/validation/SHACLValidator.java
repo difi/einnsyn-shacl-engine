@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  */
 public class SHACLValidator {
 
-    private List<Shape> shapes;
+    List<Shape> shapes;
     private Repository ontology;
 
     public SHACLValidator(Repository shaclRules, Repository ontology) {

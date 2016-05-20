@@ -26,6 +26,10 @@ public class Class extends MinMax {
         this.class_property = SesameUtils.getExactlyOneIri(shapes, object, SHACL.class_property);
     }
 
+    public IRI getClassProperty() {
+        return this.class_property;
+    }
+
     public void validate(Resource resource, List<Statement> list, ConstraintViolationHandler constraintViolationHandler,
                          RepositoryConnection dataGraphConnection) {
 

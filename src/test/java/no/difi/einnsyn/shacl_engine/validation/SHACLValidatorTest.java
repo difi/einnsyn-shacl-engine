@@ -1,14 +1,27 @@
 package no.difi.einnsyn.shacl_engine.validation;
 
+import com.github.jsonldjava.core.JsonLdError;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import no.difi.einnsyn.SHACL;
+import no.difi.einnsyn.SHACLExt;
 import no.difi.einnsyn.sesameutils.SesameUtils;
+import no.difi.einnsyn.shacl_engine.rules.PropertyConstraint;
+import no.difi.einnsyn.shacl_engine.rules.Shape;
+import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.Datatype;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolation;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationClass;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationDatatype;
+import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.Class;
 import org.junit.Test;
+import org.openrdf.model.Statement;
 import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.repository.Repository;
 import org.openrdf.rio.RDFFormat;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -208,9 +221,8 @@ public class SHACLValidatorTest {
         String dir = "simpleShaclClassViolation2";
 
         SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), null);
-
-
-
+        Shape shape = shaclValidator.shapes.get(0);
+        
         List<ConstraintViolation> violations = new ArrayList<>();
 
         assertFalse(shaclValidator.validate(
@@ -218,18 +230,38 @@ public class SHACLValidatorTest {
                 violation -> {
                     violations.add(violation);
                     System.out.println(violation);
+
+                    JsonElement jsonElement = null;
+                    try {
+                        jsonElement = violation.toJson();
+                    } catch (JsonLdError jsonLdError) {
+                        assertTrue(jsonLdError.getMessage(), false);
+                    }
+
+                    JsonObject asJsonObject = jsonElement.getAsJsonObject();
+
+                    String message = asJsonObject.get("message").getAsString();
+                    assertEquals("", "Object is a literal, expected IRI.", message);
+
+                    assertEquals("",
+                        "{\"@id\":\"http://example.org/1377d24e-8c36-4ecf-b43e-4a5cdbe9a256\",\"@type\":\"shacl:ValidationResult\",\"focusNode\":\"http://example.org/1\",\"message\":\"Object is a literal, expected IRI.\",\"object\":\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/Journalpoststatus\",\"predicate\":\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/journalpoststatus\",\"severity\":\"shacl:Violation\",\"subject\":\"http://example.org/1\"}".replaceAll("\\{\"@id\":(.*?),",""),
+                        jsonElement.toString().replaceAll("\\{\"@id\":(.*?),","")
+                    );
+
+                    System.out.println(jsonElement);
                 }
         ));
 
         SimpleValueFactory instance = SimpleValueFactory.getInstance();
 
+        List<PropertyConstraint> properties = (List<PropertyConstraint>) ReflectionTestUtils.getField(shape, "properties");
+
         List<ConstraintViolation> expectedViolations = new ArrayList<>();
-        expectedViolations.add(new ConstraintViolationClass(null, instance.createIRI("http://example.org/1"), "Object is a literal, expected IRI."));
+        expectedViolations.add(new ConstraintViolationClass(((Class) properties.get(0)), instance.createIRI("http://example.org/1"), "Object is a literal, expected IRI."));
 
         assertEquals("", expectedViolations.size(), violations.size());
         assertTrue("", violations.containsAll(expectedViolations));
         assertTrue("", expectedViolations.containsAll(violations));
-
     }
 
     @Test
@@ -238,9 +270,34 @@ public class SHACLValidatorTest {
 
         SHACLValidator shaclValidator = new SHACLValidator(getShacle(dir), null);
 
+        List<ConstraintViolation> violations = new ArrayList<>();
+
         assertFalse(shaclValidator.validate(
             getData(dir),
             System.out::println
+        ));
+
+        assertFalse(shaclValidator.validate(
+            getData(dir),
+            violation -> {
+                violations.add(violation);
+                System.out.println(violation);
+
+                JsonElement jsonElement = null;
+                try {
+                    jsonElement = violation.toJson();
+                } catch (JsonLdError jsonLdError) {
+                    assertTrue(jsonLdError.getMessage(), false);
+                }
+
+                JsonObject asJsonObject = jsonElement.getAsJsonObject();
+
+                String message = asJsonObject.get("message").getAsString();
+                assertEquals("", "Datetime found in xsd:date field", message);
+
+
+                System.out.println(jsonElement);
+            }
         ));
     }
 
@@ -263,13 +320,31 @@ public class SHACLValidatorTest {
 
         SimpleValueFactory instance = SimpleValueFactory.getInstance();
 
+        Shape shape = shaclValidator.shapes.get(0);
+
+        List<PropertyConstraint> properties = (List<PropertyConstraint>) ReflectionTestUtils.getField(shape, "properties");
+
         List<ConstraintViolation> expectedViolations = new ArrayList<>();
-        expectedViolations.add(new ConstraintViolationDatatype(null, instance.createIRI("http://example.org/1"), null, RDF.LANGSTRING));
+        expectedViolations.add(new ConstraintViolationDatatype(((Datatype) properties.get(0)), instance.createIRI("http://example.org/1"), null, RDF.LANGSTRING));
 
         assertTrue("", violations.containsAll(expectedViolations));
         assertTrue("", expectedViolations.containsAll(violations));
 
+        ConstraintViolation constraintViolation = violations.get(0);
+        List<Statement> statements = constraintViolation.validationResults();
+        assertEquals("Every violation should have exactly 1 focusNode", statements.stream().filter(s -> s.getPredicate().equals(SHACL.focusNode)).count(), 1);
+        assertEquals("Every violation should have exactly 1 actual", statements.stream()
+            .filter(s -> s.getPredicate().equals(SHACLExt.actual))
+            .filter(s -> s.getObject().equals(RDF.LANGSTRING))
+            .count(), 1);
+        assertEquals("Every violation should have exactly 1 expected", statements.stream()
+            .filter(s -> s.getPredicate().equals(SHACLExt.expected))
+            .filter(s -> s.getObject().equals(XMLSchema.STRING))
+            .count(), 1);
 
+        JsonElement jsonElement = constraintViolation.toJson();
+
+        System.out.println(jsonElement);
     }
 
     @Test

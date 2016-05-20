@@ -1,0 +1,24 @@
+{
+  "@context": {
+    "shacl-ext":"http://example.org/shacl-ext#",
+    "shacl":"http://www.w3.org/ns/shacl#",
+    "severity": {"@id":"shacl:severity", "@type":"@id"},
+    "focusNode": {"@id":"shacl:focusNode", "@type":"@id"},
+    "subject": {"@id":"shacl:subject", "@type":"@id"},
+    "predicate": {"@id":"shacl:predicate", "@type":"@id"},
+    "message": {"@id":"shacl:message"},
+    "object": {"@id":"shacl:object", "@type":"@id"},
+    "actual": {"@id":"shacl-ext:actual", "@type":"@id"},
+    "expected": {"@id":"shacl-ext:expected", "@type":"@id"}
+  },
+  "@explicit": true,
+  "@type":"shacl:ValidationResult",
+  "severity": {},
+  "focusNode":{},
+  "subject": {},
+  "predicate": {},
+  "message": {},
+  "object": {"@default":"@null", "@omitDefault":true},
+  "actual":{"@default":"@null", "@omitDefault":true},
+  "expected":{"@default":"@null", "@omitDefault":true}
+}
