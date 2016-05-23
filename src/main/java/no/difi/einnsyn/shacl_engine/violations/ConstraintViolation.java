@@ -67,10 +67,7 @@ public class ConstraintViolation {
 
         List<Statement> statements = validationResults();
 
-        ValueFactory factory = SimpleValueFactory.getInstance();
-
         statements.forEach(model::add);
-
 
         RDFWriter writer = Rio.createWriter(RDFFormat.JSONLD, stringWriter);
 
