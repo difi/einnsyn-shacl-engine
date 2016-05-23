@@ -13,8 +13,10 @@ import org.openrdf.repository.RepositoryConnection;
 import java.util.List;
 
 /**
- * Created by havardottestad on 04/05/16.
+ * Checks that the datatype of o in s --p--> o is a literal and has the datatype
+ * specified in the SHACL constraint for the specified predicat (p)
  *
+ * https://www.w3.org/TR/shacl/#AbstractDatatypePropertyConstraint
  *
  */
 public class Datatype extends MinMax {

@@ -12,8 +12,10 @@ import org.openrdf.repository.RepositoryConnection;
 import java.util.List;
 
 /**
- * Created by havardottestad on 04/05/16.
+ * Checks that the o in s --p--> o is an instance of the class specified in the SHACL
+ * constraint for the specified predicat (p)
  *
+ * https://www.w3.org/TR/shacl/#AbstractClassPropertyConstraint
  *
  */
 public class Class extends MinMax {

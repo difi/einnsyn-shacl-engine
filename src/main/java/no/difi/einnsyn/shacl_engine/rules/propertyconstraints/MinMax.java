@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Created by havardottestad on 04/05/16.
+ * Checks that any o in s --p--> o occurs the minimum or/and maximum number of
+ * times specified in the SHACL constraint for the specified predicat (p)
  *
+ * https://www.w3.org/TR/shacl/#AbstractCountPropertyConstraint
  *
  */
 public class MinMax extends PropertyConstraint {
