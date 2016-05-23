@@ -8,6 +8,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import no.difi.einnsyn.SHACL;
+import no.difi.einnsyn.SHACLExt;
 import no.difi.einnsyn.shacl_engine.rules.PropertyConstraint;
 import org.apache.commons.io.IOUtils;
 import org.openrdf.model.*;
@@ -65,7 +66,11 @@ public class ConstraintViolation {
         StringWriter stringWriter = new StringWriter();
 
         List<Statement> statements = validationResults();
+
+        ValueFactory factory = SimpleValueFactory.getInstance();
+
         statements.forEach(model::add);
+
 
         RDFWriter writer = Rio.createWriter(RDFFormat.JSONLD, stringWriter);
 

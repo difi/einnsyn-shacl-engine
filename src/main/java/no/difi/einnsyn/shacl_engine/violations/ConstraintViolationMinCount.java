@@ -31,9 +31,9 @@ public class ConstraintViolationMinCount extends ConstraintViolation {
         List<Statement> statements = super.validationResults();
 
         if (minCount.isPresent()) {
-            statements.add(factory.createStatement(validationResultsIri, SHACLExt.expected, factory.createLiteral(minCount.get() + "")));
-            statements.add(factory.createStatement(validationResultsIri, SHACLExt.actual, factory.createLiteral(actual + "")));
+            statements.add(factory.createStatement(validationResultsIri, SHACLExt.expected, factory.createLiteral(minCount.get())));
         }
+        statements.add(factory.createStatement(validationResultsIri, SHACLExt.actual, factory.createLiteral(actual)));
 
         return statements;
     }
