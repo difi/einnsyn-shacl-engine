@@ -5,6 +5,8 @@ import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.Datatype;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
+import org.openrdf.model.vocabulary.RDF;
+
 import java.util.List;
 
 /**
@@ -40,6 +42,7 @@ public class ConstraintViolationDatatype extends ConstraintViolationWithStatemen
 
         statements.add(factory.createStatement(validationResultsIri, SHACLExt.actual, actualDatatype));
         statements.add(factory.createStatement(validationResultsIri, SHACLExt.expected, expectedDatatype));
+        statements.add(factory.createStatement(validationResultsIri, RDF.TYPE, SHACLExt.ConstraintViolationDatatype));
 
         return statements;
     }

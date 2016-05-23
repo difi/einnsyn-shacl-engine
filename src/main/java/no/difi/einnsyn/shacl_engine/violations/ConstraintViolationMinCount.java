@@ -6,6 +6,7 @@ import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.MinMax;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
+import org.openrdf.model.vocabulary.RDF;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +35,7 @@ public class ConstraintViolationMinCount extends ConstraintViolation {
             statements.add(factory.createStatement(validationResultsIri, SHACLExt.expected, factory.createLiteral(minCount.get())));
         }
         statements.add(factory.createStatement(validationResultsIri, SHACLExt.actual, factory.createLiteral(actual)));
+        statements.add(factory.createStatement(validationResultsIri, RDF.TYPE, SHACLExt.ConstraintViolationMinCount));
 
         return statements;
     }

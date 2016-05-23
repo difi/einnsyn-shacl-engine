@@ -6,6 +6,7 @@ import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.Class;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
+import org.openrdf.model.vocabulary.RDF;
 
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class ConstraintViolationClass extends ConstraintViolationWithStatement {
 
         statements.add(factory.createStatement(validationResultsIri, SHACLExt.expected, factory.createLiteral(class_property.toString())));
         statements.add(factory.createStatement(validationResultsIri, SHACLExt.actual, failingStatement.getObject()));
+        statements.add(factory.createStatement(validationResultsIri, RDF.TYPE, SHACLExt.ConstraintViolationClass));
 
         return statements;
     }
