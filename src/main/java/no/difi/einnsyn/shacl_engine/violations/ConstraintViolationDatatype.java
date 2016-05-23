@@ -11,7 +11,10 @@ import java.util.List;
 
 /**
  * Created by havardottestad on 06/05/16.
+ * Modified by veronika.
  *
+ * This is a subclass of ConstraintViolation which will produce validation results specific to the property
+ * shacl:datatype. Is this literal of the expected datatype?
  *
  */
 public class ConstraintViolationDatatype extends ConstraintViolationWithStatement {
@@ -35,7 +38,10 @@ public class ConstraintViolationDatatype extends ConstraintViolationWithStatemen
             '}';
     }
 
-
+    /**
+     * Adding validation result triples specific to this kind of violations.
+     * @return a list of statements containing validation results
+     */
     @Override
     public List<Statement> validationResults() {
         List<Statement> statements = super.validationResults();

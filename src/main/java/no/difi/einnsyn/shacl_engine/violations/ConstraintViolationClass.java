@@ -12,7 +12,10 @@ import java.util.List;
 
 /**
  * Created by veronika on 5/10/16.
+ * Modified by havardottestad.
  *
+ * This is an subclass of ConstraintViolation which will produce validation results specific on the property
+ * shacl:class. Is the data triple of an expected type?
  *
  */
 public class ConstraintViolationClass extends ConstraintViolationWithStatement {
@@ -29,6 +32,10 @@ public class ConstraintViolationClass extends ConstraintViolationWithStatement {
         this.failingStatement = failingStatement;
     }
 
+    /**
+     * Adding validation result triples specific to this kind of violations.
+     * @return a list of statements containing validation results
+     */
     @Override
     public List<Statement> validationResults() {
         List<Statement> statements = super.validationResults();

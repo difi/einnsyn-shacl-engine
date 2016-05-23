@@ -46,12 +46,16 @@ public class Shape {
         }
     }
 
+    /**
+     *
+     * @param dataConnection the given data graph
+     * @param constraintViolationHandler an instance of the ConstraintViolationHandler
+     */
     public void validate(RepositoryConnection dataConnection, ConstraintViolationHandler constraintViolationHandler) {
 
         RepositoryResult<Statement> statements = dataConnection.getStatements(null, RDF.TYPE, scopeClass, true);
 
         Iterations.stream(statements)
-
             .map(statement ->
                 new TempStatementsAndResource(
                     statement.getSubject(),

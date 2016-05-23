@@ -7,14 +7,11 @@ import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.Datatype;
 import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.MinMax;
 import no.difi.einnsyn.shacl_engine.violations.*;
 import org.openrdf.model.*;
-import org.openrdf.model.impl.SimpleLiteral;
 import org.openrdf.query.QueryResults;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.rio.RDFFormat;
-
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by havardottestad on 04/05/16.
@@ -59,8 +56,6 @@ public abstract class PropertyConstraint {
             RepositoryResult<Statement> statements = shapesConnection.getStatements(object, null, null);
             Model model = QueryResults.asModel(statements);
             String shaclRuleAsTurtle = SesameUtils.modelToString(model, RDFFormat.TURTLE);
-
-
 
             throw new UnsupportedOperationException("Property constraint not implemented. \n" + shaclRuleAsTurtle);
         }

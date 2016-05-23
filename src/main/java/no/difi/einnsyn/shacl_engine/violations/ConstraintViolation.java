@@ -8,7 +8,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import no.difi.einnsyn.SHACL;
-import no.difi.einnsyn.SHACLExt;
 import no.difi.einnsyn.shacl_engine.rules.PropertyConstraint;
 import org.apache.commons.io.IOUtils;
 import org.openrdf.model.*;
@@ -25,7 +24,9 @@ import java.util.*;
 
 /**
  * Created by havardottestad on 06/05/16.
+ * Modified by veronika.
  *
+ * Superclass of all constraint violations in the SHACL engine.
  *
  */
 public class ConstraintViolation {
@@ -35,14 +36,23 @@ public class ConstraintViolation {
 
     IRI validationResultsIri;
     ValueFactory factory = SimpleValueFactory.getInstance();
+
     ConstraintViolation(PropertyConstraint propertyConstraint, Resource resource, String message) {
         this.propertyConstraint = propertyConstraint;
         this.resource = resource;
         this.message = message;
 
+        // TODO: Find a better namespace and ID.
         validationResultsIri = factory.createIRI("http://example.org/", UUID.randomUUID().toString());
     }
 
+    /**
+     * Adding validation results to a list of statements. The triples added in this method is common
+     * for every constraint violation. The results in this project is an extended version of
+     * SHACL results (https://www.w3.org/TR/shacl/#results).
+     *
+     * @return a list of statements containing validation results
+     */
     public List<Statement> validationResults() {
 
         List<Statement> statements = new ArrayList<>();
@@ -60,11 +70,18 @@ public class ConstraintViolation {
         return statements;
     }
 
+    /**
+     * This method runs the validation results into a list which gets read into a model for writing to a
+     * StringWriter. Contents of this StringWriter is parsed to JSON-LD via third-party code (GSON), applying
+     * the JSON-LD framing template.
+     *
+     * @return the validation results as framed JSON-LD
+     * @throws JsonLdError
+     */
     public JsonElement toJson() throws JsonLdError {
 
         Model model = new LinkedHashModel();
         StringWriter stringWriter = new StringWriter();
-
         List<Statement> statements = validationResults();
 
         statements.forEach(model::add);

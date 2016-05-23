@@ -28,6 +28,11 @@ import java.util.stream.Collectors;
 
 /**
  * Created by veronika on 4/28/16.
+ * Modified by havardottestad.
+ *
+ * This class is the one that gets it all going. The constructor takes in a repository of SHACL shapes and a
+ * repository containing the ontology which we will apply on our data graph before validating against the SHACL shapes.
+ *
  */
 public class SHACLValidator {
 
@@ -51,6 +56,18 @@ public class SHACLValidator {
 
     }
 
+    /**
+     * Validate a given data graph against an ontology using Jena. The data graph is then validated against
+     * a list of SHACL shapes to ensure that the data "fits" certain shapes (rules).
+     *
+     * We are using Jena for inference, since Sesame will use ten times the time Jena uses to complete the task.
+     * That was such an big difference between these two frameworks, so even that we're using Sesame in this project,
+     * Jena will have to do with the inferencing job.
+     *
+     * @param data the given data graph
+     * @param constraintViolationHandler an instance of the ConstraintViolationHandler
+     * @return true if no constraint violations is found
+     */
     public boolean validate(Repository data, ConstraintViolationHandler constraintViolationHandler) {
 
         if (shapes == null || data == null) {
@@ -58,9 +75,8 @@ public class SHACLValidator {
         }
 
         if (ontology != null) {
-//            data = addInferencing(data, ontology);
+            //data = addInferencing(data, ontology);
             data = addInferencingUsingJena(data, ontology);
-
         }
 
         final boolean[] failed = {false};
@@ -110,7 +126,6 @@ public class SHACLValidator {
         return repository;
 
     }
-
 
     private static Repository addInferencing(Repository data, Repository ontology) {
         Repository inferencedRepository = new SailRepository(new ForwardChainingRDFSInferencer(new MemoryStore()));

@@ -9,7 +9,11 @@ import java.util.List;
 
 /**
  * Created by veronika on 5/20/16.
+ * Modified by havardottestad.
  *
+ * A subclass of ConstraintViolation where we have an additional parameter (Statement) to the constructor.
+ * With a statement we may reach the object of the triple who creates the violation. In some cases, we want to know
+ * what the object is. For instance, when there is a literal instead of an URI at the object position in a triple.
  *
  */
 class ConstraintViolationWithStatement extends ConstraintViolation{
@@ -21,6 +25,10 @@ class ConstraintViolationWithStatement extends ConstraintViolation{
         this.failingStatement = failingStatement;
     }
 
+    /**
+     * Adding validation result triples specific to this kind of violations.
+     * @return a list of statements containing validation results
+     */
     @Override
     public List<Statement> validationResults() {
         List<Statement> statements = super.validationResults();

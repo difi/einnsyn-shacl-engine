@@ -2,7 +2,6 @@ package no.difi.einnsyn.shacl_engine.violations;
 
 import no.difi.einnsyn.SHACLExt;
 import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.MinMax;
-import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.vocabulary.RDF;
@@ -12,7 +11,10 @@ import java.util.Optional;
 
 /**
  * Created by havardottestad on 06/05/16.
+ * Modified by veronika.
  *
+ * This is an subclass of ConstraintViolation which will produce validation results specific on the property
+ * shacl:maxCount. Is there more than a given amount of this triple present in the data graph?
  *
  */
 public class ConstraintViolationMaxCount extends ConstraintViolation {
@@ -26,6 +28,10 @@ public class ConstraintViolationMaxCount extends ConstraintViolation {
         this.actual = propertyConstraint.getCount();
     }
 
+    /**
+     * Adding validation result triples specific to this kind of violations.
+     * @return a list of statements containing validation results
+     */
     @Override
     public List<Statement> validationResults() {
         List<Statement> statements = super.validationResults();
