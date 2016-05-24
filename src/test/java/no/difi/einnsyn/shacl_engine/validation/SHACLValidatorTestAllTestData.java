@@ -1,5 +1,6 @@
 package no.difi.einnsyn.shacl_engine.validation;
 
+import com.github.jsonldjava.core.JsonLdError;
 import no.difi.einnsyn.sesameutils.SesameUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,7 +77,15 @@ public class SHACLValidatorTestAllTestData {
                 System.out.println("Testing: " + realPath);
                 SHACLValidator shaclValidator = new SHACLValidator(getShacl(path), getOntology(realPath));
 
-                assertEquals("", shouldPass, shaclValidator.validate(getData(realPath), System.out::println));
+                assertEquals("", shouldPass, shaclValidator.validate(getData(realPath), vc -> {
+                    vc.validationResults();
+                    try {
+                        vc.toJson();
+                    } catch (JsonLdError jsonLdError) {
+                        throw new RuntimeException(jsonLdError);
+                    }
+                    System.out.println(vc);
+                }));
 
                 ranAtLeastOneTest = true;
 

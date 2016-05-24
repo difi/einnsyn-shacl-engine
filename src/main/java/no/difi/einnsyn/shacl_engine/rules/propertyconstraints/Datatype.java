@@ -36,6 +36,9 @@ public class Datatype extends MinMax {
     public void validate(Resource resource, List<Statement> list, ConstraintViolationHandler constraintViolationHandler,
                          RepositoryConnection dataGraphConnection) {
 
+        super.validate(resource, list, constraintViolationHandler, dataGraphConnection);
+
+
         list.stream()
             .filter(statement -> statement.getPredicate().equals(predicate))
             .filter(statement -> !(statement.getObject() instanceof SimpleLiteral))

@@ -137,7 +137,7 @@ public class SHACLValidatorTest {
     }
 
     @Test
-    public void simpleShacleDatetimeInDateViolation() throws Exception {
+    public void simpleShaclDatetimeInDateViolation() throws Exception {
         String dir = "testData/datetimeIndate";
 
         SHACLValidator shaclValidator = new SHACLValidator(getShacl(dir), null);
@@ -174,7 +174,7 @@ public class SHACLValidatorTest {
     }
 
     @Test
-    public void simpleShacleMinDatatypeViolation() throws Exception {
+    public void simpleShaclMinDatatypeViolation() throws Exception {
         String dir = "testData/datatypeStringVsLangString";
 
         SHACLValidator shaclValidator = new SHACLValidator(getShacl(dir), null);
@@ -220,6 +220,31 @@ public class SHACLValidatorTest {
     }
 
 
+
+    @Test
+    public void testAllViolationsAtOnce() throws Exception {
+        String dir = "testData/allViolations";
+
+        SHACLValidator shaclValidator = new SHACLValidator(getShacl(dir), getOntology(dir+"/fail"));
+
+
+        List<ConstraintViolation> violations = new ArrayList<>();
+
+        assertFalse(shaclValidator.validate(
+            getData(dir + "/fail"),
+            violation -> {
+                violations.add(violation);
+                try {
+                    violation.toJson();
+                } catch (JsonLdError jsonLdError) {
+                    throw new RuntimeException(jsonLdError.toString());
+                }
+                System.out.println(violation);
+            }
+        ));
+
+        assertEquals("All SHACL rules should fail, including failures for minCount and maxCount inside datatype and class rules", 11, violations.size());
+    }
 
     private Repository getData(String simpleShaclViolation) throws IOException {
         InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(simpleShaclViolation + "/data.ttl");
