@@ -46,7 +46,9 @@ public class ConstraintViolationDatatype extends ConstraintViolationWithStatemen
     public List<Statement> validationResults() {
         List<Statement> statements = super.validationResults();
 
-        statements.add(factory.createStatement(validationResultsIri, SHACLExt.actual, actualDatatype));
+        if(actualDatatype != null){
+            statements.add(factory.createStatement(validationResultsIri, SHACLExt.actual, actualDatatype));
+        }
         statements.add(factory.createStatement(validationResultsIri, SHACLExt.expected, expectedDatatype));
         statements.add(factory.createStatement(validationResultsIri, RDF.TYPE, SHACLExt.ConstraintViolationDatatype));
 
