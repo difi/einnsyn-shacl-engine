@@ -80,16 +80,13 @@ public class ConstraintViolation {
      */
     public JsonElement toJson() throws JsonLdError {
 
-        Model model = new LinkedHashModel();
         StringWriter stringWriter = new StringWriter();
         List<Statement> statements = validationResults();
-
-        statements.forEach(model::add);
 
         RDFWriter writer = Rio.createWriter(RDFFormat.JSONLD, stringWriter);
 
         writer.startRDF();
-        model.forEach(writer::handleStatement);
+        statements.forEach(writer::handleStatement);
         writer.endRDF();
 
         String jsonld = stringWriter.toString();
