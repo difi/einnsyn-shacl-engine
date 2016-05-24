@@ -9,5 +9,5 @@ import com.github.jsonldjava.core.JsonLdError;
  */
 public interface ConstraintViolationHandler {
 
-    void handle(ConstraintViolation violation) throws JsonLdError;
+    void handle(ConstraintViolation violation);
 }
