@@ -57,6 +57,35 @@ public class SHACLValidatorTest {
     }
 
     @Test
+    public void strictModeTest() throws IOException {
+        String dir = "strictModeTestData/strictMode";
+
+        SHACLValidator shaclValidator = new SHACLValidator(getShacl(dir), null, true);
+
+        assertFalse(shaclValidator.validate( getData(dir+"/fail"),   violation -> {}, statement -> {
+
+            System.out.println(statement);
+        }));
+
+
+    }
+
+
+    @Test
+    public void strictModeTest2() throws IOException {
+        String dir = "strictModeTestData/strictMode";
+
+        SHACLValidator shaclValidator = new SHACLValidator(getShacl(dir), getOntology(dir+"/pass"), true);
+
+        assertTrue(shaclValidator.validate( getData(dir+"/pass"),   violation -> {}, statement -> {
+
+            System.out.println(statement);
+        }));
+
+
+    }
+
+    @Test
     public void minCountTest() throws Exception {
         String dir = "testData/minCount1";
 

@@ -6,19 +6,21 @@ import no.difi.einnsyn.shacl_engine.rules.PropertyConstraint;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationMaxCount;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationMinCount;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.sail.memory.model.MemStatement;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Checks that any o in s --p--> o occurs the minimum or/and maximum number of
  * times specified in the SHACL constraint for the specified predicat (p)
  *
  * https://www.w3.org/TR/shacl/#AbstractCountPropertyConstraint
- *
  */
 public class MinMaxConstraint extends PropertyConstraint {
 
@@ -26,8 +28,8 @@ public class MinMaxConstraint extends PropertyConstraint {
     protected Optional<Integer> maxCount;
     private long count;
 
-    public MinMaxConstraint(Resource object, RepositoryConnection shapes) {
-        super(object, shapes);
+    public MinMaxConstraint(Resource object, RepositoryConnection shapes, IRI severity, boolean strictMode) {
+        super(object, shapes, severity, strictMode);
 
         this.minCount = SesameUtils.getOptionalOneInteger(shapes, object, SHACL.minCount);
         this.maxCount = SesameUtils.getOptionalOneInteger(shapes, object, SHACL.maxCount);
@@ -36,17 +38,30 @@ public class MinMaxConstraint extends PropertyConstraint {
     public Optional<Integer> getMinCount() {
         return this.minCount;
     }
+
     public Optional<Integer> getMaxCount() {
         return this.maxCount;
     }
-    public long getCount() { return this.count; }
+
+    public long getCount() {
+        return this.count;
+    }
 
     public void validate(Resource resource, List<Statement> list, ConstraintViolationHandler constraintViolationHandler,
                          RepositoryConnection dataGraphConnection) {
 
-        count = list.stream()
+
+
+        Stream<Statement> peek = list.stream()
 
             .filter(statement -> statement.getPredicate().equals(predicate))
+            .peek(statement -> {
+                if (strictMode && statement instanceof MemStatement) {
+                    ((MemStatement) statement).setTillSnapshot(Integer.MAX_VALUE - 1);
+                }
+            });
+
+        count = peek
             .count();
 
         if (maxCount.isPresent()) {

@@ -2,7 +2,5 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix arkiv: <http://www.arkivverket.no/standarder/noark5/arkivstruktur/> .
 
-<http://example.org/1>
-    a arkiv:Journalpost ;
-    arkiv:journalpoststatus arkiv:utfort .
 
+arkiv:hurra a arkiv:journalstatus.

@@ -23,8 +23,8 @@ public class ClassConstraint extends MinMaxConstraint {
 
     private IRI class_property;
 
-    public ClassConstraint(Resource object, RepositoryConnection shapes) {
-        super(object, shapes);
+    public ClassConstraint(Resource object, RepositoryConnection shapes, IRI severity, boolean strictMode) {
+        super(object, shapes, severity, strictMode);
 
         this.class_property = SesameUtils.getExactlyOneIri(shapes, object, SHACL.class_property);
     }

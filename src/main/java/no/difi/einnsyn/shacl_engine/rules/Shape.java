@@ -8,6 +8,7 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryResult;
+import org.openrdf.sail.memory.model.MemStatement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,23 +16,22 @@ import java.util.stream.Collectors;
 
 /**
  * Created by havardottestad on 04/05/16.
- *
- *
  */
 public class Shape {
 
 
     private Resource scopeClass;
     private final List<PropertyConstraint> properties = new ArrayList<>();
+    boolean strictMode;
 
-
-    public Shape(Resource subject, RepositoryConnection shapesConnection) {
+    public Shape(Resource subject, RepositoryConnection shapesConnection, boolean strictMode) {
+        this.strictMode = strictMode;
         scopeClass = (Resource) shapesConnection.getStatements(subject, SHACL.scopeClass, null).next().getObject();
 
         RepositoryResult<Statement> statements = shapesConnection.getStatements(subject, SHACL.property, null);
 
         Iterations.stream(statements)
-            .map(statement -> PropertyConstraint.Factory.create((Resource) statement.getObject(), shapesConnection))
+            .map(statement -> PropertyConstraint.Factory.create((Resource) statement.getObject(), shapesConnection, strictMode))
             .forEach(properties::add);
 
     }
@@ -47,8 +47,7 @@ public class Shape {
     }
 
     /**
-     *
-     * @param dataConnection the given data graph
+     * @param dataConnection             the given data graph
      * @param constraintViolationHandler an instance of the ConstraintViolationHandler
      */
     public void validate(RepositoryConnection dataConnection, ConstraintViolationHandler constraintViolationHandler) {
@@ -56,6 +55,13 @@ public class Shape {
         RepositoryResult<Statement> statements = dataConnection.getStatements(null, RDF.TYPE, scopeClass, true);
 
         Iterations.stream(statements)
+            .peek(
+                statement -> {
+                    if (statement instanceof MemStatement) {
+                        ((MemStatement) statement).setTillSnapshot(Integer.MAX_VALUE - 1);
+                    }
+                }
+            )
             .map(statement ->
                 new TempStatementsAndResource(
                     statement.getSubject(),

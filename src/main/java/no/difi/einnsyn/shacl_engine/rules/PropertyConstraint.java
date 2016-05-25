@@ -11,6 +11,7 @@ import org.openrdf.query.QueryResults;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.rio.RDFFormat;
+
 import java.util.List;
 
 /**
@@ -20,14 +21,14 @@ import java.util.List;
  */
 public abstract class PropertyConstraint {
 
+    protected final boolean strictMode;
     protected IRI predicate;
     protected IRI severity = SHACL.Violation;
 
-    protected PropertyConstraint(Resource subject, RepositoryConnection shapesConnection) {
-        predicate = (IRI) shapesConnection.getStatements(subject, SHACL.predicate, null).next().getObject();
-        if (shapesConnection.hasStatement(subject, SHACL.severity, null, true)) {
-            this.severity = SesameUtils.getExactlyOneIri(shapesConnection, subject, SHACL.severity);
-        }
+    protected PropertyConstraint(Resource object, RepositoryConnection shapes, IRI severity, boolean strictMode) {
+        this.strictMode = strictMode;
+        predicate = (IRI) shapes.getStatements(object, SHACL.predicate, null).next().getObject();
+        this.severity = severity;
     }
 
     protected abstract void validate(Resource resource, List<Statement> list,
@@ -43,20 +44,20 @@ public abstract class PropertyConstraint {
 
     static class Factory {
 
-        static PropertyConstraint create(Resource object, RepositoryConnection shapesConnection) {
+        static PropertyConstraint create(Resource object, RepositoryConnection shapesConnection, IRI severity, boolean strictMode) {
 
             if(shapesConnection.hasStatement(object, SHACL.class_property, null, true)) {
-                return new ClassConstraint(object, shapesConnection);
+                return new ClassConstraint(object, shapesConnection, severity, strictMode);
             }
 
             if(shapesConnection.hasStatement(object, SHACL.datatype, null, true)) {
-                return new DatatypeConstraint(object, shapesConnection);
+                return new DatatypeConstraint(object, shapesConnection, severity, strictMode);
             }
 
-            if(shapesConnection.hasStatement(object, SHACL.minCount, null, true) ||
+            if (shapesConnection.hasStatement(object, SHACL.minCount, null, true) ||
                 shapesConnection.hasStatement(object, SHACL.maxCount, null, true)) {
 
-                return new MinMaxConstraint(object, shapesConnection);
+                return new MinMaxConstraint(object, shapesConnection, severity, strictMode);
             }
 
             // Throw exception for unhandled contraints.

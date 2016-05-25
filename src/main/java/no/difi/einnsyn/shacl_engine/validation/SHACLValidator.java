@@ -4,6 +4,7 @@ import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.sesameutils.SesameUtils;
 import no.difi.einnsyn.shacl_engine.rules.Shape;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
+import no.difi.einnsyn.shacl_engine.violations.StrictModeStatementHandler;
 import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -21,6 +22,7 @@ import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
 import org.openrdf.sail.memory.MemoryStore;
+import org.openrdf.sail.memory.model.MemStatement;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
@@ -30,15 +32,33 @@ import java.util.stream.Collectors;
 /**
  * Created by veronika on 4/28/16.
  * Modified by havardottestad.
- *
+ * <p>
  * This class is the one that gets it all going. The constructor takes in a repository of SHACL shapes and a
  * repository containing the ontology which we will apply on our data graph before validating against the SHACL shapes.
- *
  */
 public class SHACLValidator {
 
+    private boolean strictMode;
     List<Shape> shapes;
     private Repository ontology;
+
+    public SHACLValidator(Repository shaclRules, Repository ontology, boolean strictMode) {
+
+        this.strictMode = strictMode;
+        if (shaclRules == null) {
+            return;
+        }
+
+        try (RepositoryConnection shapesConnection = shaclRules.getConnection()) {
+            RepositoryResult<Statement> statements = shapesConnection.getStatements(null, RDF.TYPE, SHACL.Shape);
+
+            shapes = QueryResults.stream(statements)
+                .map(statement -> new Shape(statement.getSubject(), shapesConnection, strictMode))
+                .collect(Collectors.toList());
+        }
+
+        this.ontology = ontology;
+    }
 
     public SHACLValidator(Repository shaclRules, Repository ontology) {
         if (shaclRules == null) {
@@ -49,7 +69,7 @@ public class SHACLValidator {
             RepositoryResult<Statement> statements = shapesConnection.getStatements(null, RDF.TYPE, SHACL.Shape);
 
             shapes = QueryResults.stream(statements)
-                .map(statement -> new Shape(statement.getSubject(), shapesConnection))
+                .map(statement -> new Shape(statement.getSubject(), shapesConnection, false))
                 .collect(Collectors.toList());
         }
 
@@ -60,20 +80,28 @@ public class SHACLValidator {
     /**
      * Validate a given data graph against an ontology using Jena. The data graph is then validated against
      * a list of SHACL shapes to ensure that the data "fits" certain shapes (rules).
-     *
+     * <p>
      * We are using Jena for inference, since Sesame will use ten times the time Jena uses to complete the task.
      * That was such an big difference between these two frameworks, so even that we're using Sesame in this project,
      * Jena will have to do with the inferencing job.
      *
-     * @param data the given data graph
+     * @param data                       the given data graph
      * @param constraintViolationHandler an instance of the ConstraintViolationHandler
      * @return true if no constraint violations is found
      */
     public boolean validate(Repository data, ConstraintViolationHandler constraintViolationHandler) {
+        return validate(data, constraintViolationHandler, statement -> {
+        });
+    }
+
+
+    public boolean validate(Repository data, ConstraintViolationHandler constraintViolationHandler, StrictModeStatementHandler strictModeStatementHandler) {
 
         if (shapes == null || data == null) {
             return false;
         }
+
+        Repository originalData = data;
 
         if (ontology != null) {
             //data = addInferencing(data, ontology);
@@ -91,6 +119,32 @@ public class SHACLValidator {
                     }
                     constraintViolationHandler.handle(violation);
                 }));
+
+
+            if (strictMode) {
+
+
+                try (RepositoryConnection originalDataConnection = originalData.getConnection();) {
+                    RepositoryResult<Statement> statements = originalDataConnection.getStatements(null, null, null);
+                    while (statements.hasNext()) {
+                        Statement next = statements.next();
+                        RepositoryResult<Statement> statements1 = dataConnection.getStatements(next.getSubject(), next.getPredicate(), next.getObject());
+                        if(statements1.hasNext()){
+                            next = statements1.next();
+                        }
+
+                        if (next instanceof MemStatement) {
+                            if (((MemStatement) next).getTillSnapshot() == Integer.MAX_VALUE) {
+                                failed[0] = true;
+                                strictModeStatementHandler.handle(next);
+                            }
+                        }
+
+
+                    }
+                }
+
+            }
 
             return !failed[0];
         }
@@ -154,5 +208,6 @@ public class SHACLValidator {
 
         return inferencedRepository;
     }
+
 
 }

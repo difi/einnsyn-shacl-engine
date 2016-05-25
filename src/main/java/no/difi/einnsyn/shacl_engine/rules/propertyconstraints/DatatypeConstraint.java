@@ -24,8 +24,8 @@ public class DatatypeConstraint extends MinMaxConstraint {
 
     private IRI datatype;
 
-    public DatatypeConstraint(Resource object, RepositoryConnection shapes) {
-        super(object, shapes);
+    public DatatypeConstraint(Resource object, RepositoryConnection shapes, IRI severity, boolean strictMode) {
+        super(object, shapes, severity, strictMode);
 
         this.datatype = SesameUtils.getExactlyOneIri(shapes, object, SHACL.datatype);
     }
