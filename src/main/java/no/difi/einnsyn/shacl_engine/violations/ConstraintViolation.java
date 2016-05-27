@@ -60,15 +60,11 @@ public class ConstraintViolation {
         ValueFactory factory = SimpleValueFactory.getInstance();
 
         statements.add(factory.createStatement(validationResultsIri, RDF.TYPE, SHACL.ValidationResult));
-
-        boolean severity = Severity.checkForSeverity(statements);
-        if (!severity) {
-            statements.add(Severity.addDefaultSeverity(validationResultsIri));
-        }
-
         statements.add(factory.createStatement(validationResultsIri, SHACL.focusNode, resource));
         statements.add(factory.createStatement(validationResultsIri, SHACL.subject, resource));
         statements.add(factory.createStatement(validationResultsIri, SHACL.predicate, propertyConstraint.getPredicate()));
+
+        statements.add(factory.createStatement(validationResultsIri, SHACL.severity, propertyConstraint.getSeverity()));
 
         Literal messageLiteral = factory.createLiteral(message);
         statements.add(factory.createStatement(validationResultsIri, SHACL.message, messageLiteral));

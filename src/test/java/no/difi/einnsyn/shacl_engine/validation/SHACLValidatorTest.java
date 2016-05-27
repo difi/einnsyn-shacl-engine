@@ -172,6 +172,44 @@ public class SHACLValidatorTest {
         ));
     }
 
+
+    @Test
+    public void severityWarningOnDatatypeTest() throws Exception {
+        String dir = "testData/severity";
+
+        SHACLValidator shaclValidator = new SHACLValidator(getShacl(dir), null);
+
+        List<ConstraintViolation> violations = new ArrayList<>();
+
+        assertFalse(shaclValidator.validate(
+            getData(dir+"/fail"),
+            System.out::println
+        ));
+
+        assertFalse(shaclValidator.validate(
+            getData(dir+"/fail"),
+            violation -> {
+                violations.add(violation);
+                System.out.println(violation);
+
+                JsonElement jsonElement = null;
+                try {
+                    jsonElement = violation.toJson();
+                } catch (JsonLdError jsonLdError) {
+                    assertTrue(jsonLdError.getMessage(), false);
+                }
+
+                JsonObject asJsonObject = jsonElement.getAsJsonObject();
+
+                String message = asJsonObject.get("message").getAsString();
+                assertEquals("", "Datetime found in xsd:date field", message);
+
+
+                System.out.println(jsonElement);
+            }
+        ));
+    }
+
     @Test
     public void simpleShaclMinDatatypeViolation() throws Exception {
         String dir = "testData/datatypeStringVsLangString";

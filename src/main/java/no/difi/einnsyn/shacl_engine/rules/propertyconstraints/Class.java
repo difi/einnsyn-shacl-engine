@@ -6,6 +6,7 @@ import no.difi.einnsyn.shacl_engine.violations.*;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
+import org.openrdf.model.Value;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryConnection;
 
@@ -22,8 +23,8 @@ public class Class extends MinMax {
 
     private IRI class_property;
 
-    public Class(Resource object, RepositoryConnection shapes) {
-        super(object, shapes);
+    public Class(Resource object, RepositoryConnection shapes, IRI severity) {
+        super(object, shapes, severity);
 
         this.class_property = SesameUtils.getExactlyOneIri(shapes, object, SHACL.class_property);
     }
