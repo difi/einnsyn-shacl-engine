@@ -1,9 +1,7 @@
 package no.difi.einnsyn.shacl_engine.violations;
 
-import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.SHACLExt;
 import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.Class;
-import no.difi.einnsyn.shacl_engine.rules.severity.Severity;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
