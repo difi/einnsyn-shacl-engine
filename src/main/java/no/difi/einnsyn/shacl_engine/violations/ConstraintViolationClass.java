@@ -3,6 +3,7 @@ package no.difi.einnsyn.shacl_engine.violations;
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.SHACLExt;
 import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.Class;
+import no.difi.einnsyn.shacl_engine.rules.severity.Severity;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -43,7 +44,6 @@ public class ConstraintViolationClass extends ConstraintViolationWithStatement {
         statements.add(factory.createStatement(validationResultsIri, SHACLExt.expected, factory.createLiteral(class_property.toString())));
         statements.add(factory.createStatement(validationResultsIri, SHACLExt.actual, failingStatement.getObject()));
         statements.add(factory.createStatement(validationResultsIri, RDF.TYPE, SHACLExt.ConstraintViolationClass));
-
         return statements;
     }
 

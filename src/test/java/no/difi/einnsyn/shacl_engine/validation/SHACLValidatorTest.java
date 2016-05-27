@@ -1,7 +1,6 @@
 package no.difi.einnsyn.shacl_engine.validation;
 
 import com.github.jsonldjava.core.JsonLdError;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import no.difi.einnsyn.Arkiv;
@@ -89,39 +88,39 @@ public class SHACLValidatorTest {
 
         SHACLValidator shaclValidator = new SHACLValidator(getShacl(dir), null);
         Shape shape = shaclValidator.shapes.get(0);
-        
+
         List<ConstraintViolation> violations = new ArrayList<>();
 
         assertFalse(shaclValidator.validate(
-                getData(dir+"/fail2"),
-                violation -> {
-                    violations.add(violation);
-                    System.out.println(violation);
+            getData(dir+"/fail2"),
+            violation -> {
+                violations.add(violation);
+                System.out.println(violation);
 
-                    JsonElement jsonElement = null;
-                    try {
-                        jsonElement = violation.toJson();
-                    } catch (JsonLdError jsonLdError) {
-                        assertTrue(jsonLdError.getMessage(), false);
-                    }
-
-                    JsonObject asJsonObject = jsonElement.getAsJsonObject();
-
-                    assertEquals("", "utfort", asJsonObject.get("object").getAsString());
-                    assertEquals("", "utfort", asJsonObject.get("actual").getAsString());
-                    assertEquals("", Arkiv.Journalpoststatus.toString(), asJsonObject.get("expected").getAsString());
-
-                    String message = asJsonObject.get("message").getAsString();
-                    assertEquals("", "Object is a literal, expected IRI.", message);
-
-                    System.out.println(jsonElement);
-                    assertEquals("",
-                        "{\"@id\":\"http://example.org/9d78e4eb-6684-4ea8-b73a-49d52dd66587\",\"@type\":[\"shacl:ValidationResult\",\"shacl-ext:ConstraintViolationClass\"],\"actual\":\"utfort\",\"expected\":\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/Journalpoststatus\",\"focusNode\":\"http://example.org/1\",\"message\":\"Object is a literal, expected IRI.\",\"object\":\"utfort\",\"predicate\":\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/journalpoststatus\",\"severity\":\"shacl:Violation\",\"subject\":\"http://example.org/1\"}".replaceAll("\\{\"@id\":(.*?),",""),
-                        jsonElement.toString().replaceAll("\\{\"@id\":(.*?),","")
-                    );
-
-                    System.out.println(jsonElement);
+                JsonElement jsonElement = null;
+                try {
+                    jsonElement = violation.toJson();
+                } catch (JsonLdError jsonLdError) {
+                    assertTrue(jsonLdError.getMessage(), false);
                 }
+
+                JsonObject asJsonObject = jsonElement.getAsJsonObject();
+
+                assertEquals("", "utfort", asJsonObject.get("object").getAsString());
+                assertEquals("", "utfort", asJsonObject.get("actual").getAsString());
+                assertEquals("", Arkiv.Journalpoststatus.toString(), asJsonObject.get("expected").getAsString());
+
+                String message = asJsonObject.get("message").getAsString();
+                assertEquals("", "Object is a literal, expected IRI.", message);
+
+                System.out.println(jsonElement);
+                assertEquals("",
+                    "{\"@id\":\"http://example.org/9d78e4eb-6684-4ea8-b73a-49d52dd66587\",\"@type\":[\"sh:ValidationResult\",\"sh-ext:ConstraintViolationClass\"],\"actual\":\"utfort\",\"expected\":\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/Journalpoststatus\",\"focusNode\":\"http://example.org/1\",\"message\":\"Object is a literal, expected IRI.\",\"object\":\"utfort\",\"predicate\":\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/journalpoststatus\",\"severity\":\"sh:Violation\",\"subject\":\"http://example.org/1\"}".replaceAll("\\{\"@id\":(.*?),",""),
+                    jsonElement.toString().replaceAll("\\{\"@id\":(.*?),","")
+                );
+
+                System.out.println(jsonElement);
+            }
         ));
 
         SimpleValueFactory instance = SimpleValueFactory.getInstance();
@@ -179,7 +178,6 @@ public class SHACLValidatorTest {
 
         SHACLValidator shaclValidator = new SHACLValidator(getShacl(dir), null);
 
-
         List<ConstraintViolation> violations = new ArrayList<>();
 
         assertFalse(shaclValidator.validate(
@@ -218,7 +216,6 @@ public class SHACLValidatorTest {
 
         System.out.println(jsonElement);
     }
-
 
 
     @Test

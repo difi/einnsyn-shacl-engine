@@ -9,9 +9,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.shacl_engine.rules.PropertyConstraint;
+import no.difi.einnsyn.shacl_engine.rules.severity.Severity;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.SerializationException;
 import org.openrdf.model.*;
-import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.rio.RDFFormat;
@@ -59,7 +60,12 @@ public class ConstraintViolation {
         ValueFactory factory = SimpleValueFactory.getInstance();
 
         statements.add(factory.createStatement(validationResultsIri, RDF.TYPE, SHACL.ValidationResult));
-        statements.add(factory.createStatement(validationResultsIri, SHACL.severity, SHACL.Violation));
+
+        boolean severity = Severity.checkForSeverity(statements);
+        if (!severity) {
+            statements.add(Severity.addDefaultSeverity(validationResultsIri));
+        }
+
         statements.add(factory.createStatement(validationResultsIri, SHACL.focusNode, resource));
         statements.add(factory.createStatement(validationResultsIri, SHACL.subject, resource));
         statements.add(factory.createStatement(validationResultsIri, SHACL.predicate, propertyConstraint.getPredicate()));
