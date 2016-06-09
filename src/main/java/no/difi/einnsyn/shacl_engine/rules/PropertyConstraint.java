@@ -59,24 +59,24 @@ public abstract class PropertyConstraint {
                 return new DatatypeConstraint(object, shapesConnection, severity, strictMode);
             }
 
-                if (shapesConnection.hasStatement(object, SHACL.classIn, null, true)) {
-                    return new ClassIn(object, shapesConnection, severity, strictMode);
-                }
-
-                if (shapesConnection.hasStatement(object, SHACL.minCount, null, true) ||
-                    shapesConnection.hasStatement(object, SHACL.maxCount, null, true)) {
-
-                    return new MinMaxConstraint(object, shapesConnection, severity, strictMode);
-                }
-
-                // Throw exception for unhandled contraints.
-                RepositoryResult<Statement> statements = shapesConnection.getStatements(object, null, null);
-                Model model = QueryResults.asModel(statements);
-
-                String shaclRuleAsTurtle = SesameUtils.modelToString(model, RDFFormat.TURTLE);
-
-                throw new UnsupportedOperationException("Property constraint not implemented. \n" + shaclRuleAsTurtle);
+            if (shapesConnection.hasStatement(object, SHACL.classIn, null, true)) {
+                return new ClassIn(object, shapesConnection, severity, strictMode);
             }
+
+            if (shapesConnection.hasStatement(object, SHACL.minCount, null, true) ||
+                shapesConnection.hasStatement(object, SHACL.maxCount, null, true)) {
+
+                return new MinMaxConstraint(object, shapesConnection, severity, strictMode);
+            }
+
+            // Throw exception for unhandled contraints.
+            RepositoryResult<Statement> statements = shapesConnection.getStatements(object, null, null);
+            Model model = QueryResults.asModel(statements);
+
+            String shaclRuleAsTurtle = SesameUtils.modelToString(model, RDFFormat.TURTLE);
+
+            throw new UnsupportedOperationException("Property constraint not implemented. \n" + shaclRuleAsTurtle);
+        }
 
     }
 }
