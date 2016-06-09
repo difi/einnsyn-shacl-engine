@@ -77,11 +77,10 @@ public class SHACLValidatorTestAllTestData {
                 System.out.println("Testing: " + realPath);
                 SHACLValidator shaclValidator = new SHACLValidator(getShacl(path), getOntology(realPath));
 
-                assertEquals("", shouldPass, shaclValidator.validate(getData(realPath), vc -> {
-                    vc.validationResults();
+                assertEquals("", shouldPass, shaclValidator.validate(getData(realPath), constraintViolation -> {
+                    constraintViolation.validationResults();
                     try {
-                        vc.toJson();
-                        System.out.println(vc.toJson().toString());
+                        System.out.println(constraintViolation.toJson().toString());
                     } catch (JsonLdError jsonLdError) {
                         throw new RuntimeException(jsonLdError);
                     }
