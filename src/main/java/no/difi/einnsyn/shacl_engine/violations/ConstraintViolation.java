@@ -4,6 +4,7 @@ import com.github.jsonldjava.core.JsonLdError;
 import com.github.jsonldjava.core.JsonLdOptions;
 import com.github.jsonldjava.core.JsonLdProcessor;
 import com.github.jsonldjava.utils.JsonUtils;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -13,13 +14,17 @@ import org.apache.commons.io.IOUtils;
 import org.openrdf.model.*;
 import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by havardottestad on 06/05/16.
@@ -66,6 +71,7 @@ public class ConstraintViolation {
 
         Literal messageLiteral = factory.createLiteral(message);
         statements.add(factory.createStatement(validationResultsIri, SHACL.message, messageLiteral));
+        statements.add(factory.createStatement(validationResultsIri, RDFS.COMMENT, factory.createLiteral(new GsonBuilder().create().toJson(propertyConstraint))));
 
         return statements;
     }
