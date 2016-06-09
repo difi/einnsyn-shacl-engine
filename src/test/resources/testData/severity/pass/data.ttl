@@ -4,5 +4,5 @@
 
 <http://example.org/1>
     a arkiv:Journalpost ;
-    arkiv:dokumentetsDato "2014-11-21T15:13:35.749+01:00"^^xsd:date.
+    arkiv:dokumentetsDato "2014-11-21"^^xsd:date.
 
