@@ -181,13 +181,13 @@ public class SHACLValidatorTest {
 
         List<ConstraintViolation> violations = new ArrayList<>();
 
-        assertFalse(shaclValidator.validate(
-            getData(dir+"/fail"),
+        assertTrue(shaclValidator.validate(
+            getData(dir+"/pass"),
             System.out::println
         ));
 
-        assertFalse(shaclValidator.validate(
-            getData(dir+"/fail"),
+        assertTrue(shaclValidator.validate(
+            getData(dir+"/pass"),
             violation -> {
                 violations.add(violation);
                 System.out.println(violation);
@@ -195,17 +195,16 @@ public class SHACLValidatorTest {
                 JsonElement jsonElement = null;
                 try {
                     jsonElement = violation.toJson();
+                    JsonObject asJsonObject = jsonElement.getAsJsonObject();
+
+                    String message = asJsonObject.get("severity").getAsString();
+                    assertEquals("", "sh:Warning", message);
+
+                    System.out.println(jsonElement);
                 } catch (JsonLdError jsonLdError) {
                     assertTrue(jsonLdError.getMessage(), false);
                 }
 
-                JsonObject asJsonObject = jsonElement.getAsJsonObject();
-
-                String message = asJsonObject.get("message").getAsString();
-                assertEquals("", "Datetime found in xsd:date field", message);
-
-
-                System.out.println(jsonElement);
             }
         ));
     }
