@@ -125,4 +125,8 @@ public class ConstraintViolation {
             ", message='" + message + '\'' +
             '}';
     }
+
+    public IRI getSeverity() {
+        return propertyConstraint.getSeverity();
+    }
 }

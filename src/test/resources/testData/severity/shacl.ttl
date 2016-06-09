@@ -12,4 +12,11 @@ arkiv:JournalpostsShape
 		sh:predicate arkiv:dokumentetsDato ;
 		sh:datatype xsd:date ;
 		sh:severity sh:Warning ;
-	] .
+	] ;
+
+	sh:property [
+    		sh:predicate arkiv:opprettetDato ;
+    		sh:datatype xsd:date ;
+    		sh:severity sh:Violation ;
+    	]
+	.

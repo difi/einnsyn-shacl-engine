@@ -86,7 +86,9 @@ public class SHACLValidator {
 
             shapes.stream()
                 .forEach(shape -> shape.validate(dataConnection, (violation) -> {
-                    failed[0] = true;
+                    if(violation.getSeverity().equals(SHACL.Violation)) {
+                        failed[0] = true;
+                    }
                     constraintViolationHandler.handle(violation);
                 }));
 

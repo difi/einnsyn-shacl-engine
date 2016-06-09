@@ -1,7 +1,7 @@
 package no.difi.einnsyn.shacl_engine.violations;
 
 import no.difi.einnsyn.SHACLExt;
-import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.Class;
+import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.ClassConstraint;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -22,7 +22,7 @@ public class ConstraintViolationClass extends ConstraintViolationWithStatement {
     private IRI class_property;
     private Statement failingStatement;
 
-    public ConstraintViolationClass(Class propertyConstraint, Resource resource, String message, Statement failingStatement) {
+    public ConstraintViolationClass(ClassConstraint propertyConstraint, Resource resource, String message, Statement failingStatement) {
         super(propertyConstraint, resource, message, failingStatement);
 
         if (propertyConstraint.getClassProperty() != null) {

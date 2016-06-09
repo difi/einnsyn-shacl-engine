@@ -3,11 +3,12 @@ package no.difi.einnsyn.shacl_engine.rules.propertyconstraints;
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.sesameutils.SesameUtils;
 import no.difi.einnsyn.shacl_engine.rules.PropertyConstraint;
-import no.difi.einnsyn.shacl_engine.violations.*;
+import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
+import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationMaxCount;
+import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationMinCount;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
-import org.openrdf.model.Value;
 import org.openrdf.repository.RepositoryConnection;
 
 import java.util.List;
@@ -20,13 +21,13 @@ import java.util.Optional;
  * https://www.w3.org/TR/shacl/#AbstractCountPropertyConstraint
  *
  */
-public class MinMax extends PropertyConstraint {
+public class MinMaxConstraint extends PropertyConstraint {
 
     protected Optional<Integer> minCount;
     protected Optional<Integer> maxCount;
     private long count;
 
-    public MinMax(Resource object, RepositoryConnection shapes, IRI severity) {
+    public MinMaxConstraint(Resource object, RepositoryConnection shapes, IRI severity) {
         super(object, shapes, severity);
 
         this.minCount = SesameUtils.getOptionalOneInteger(shapes, object, SHACL.minCount);

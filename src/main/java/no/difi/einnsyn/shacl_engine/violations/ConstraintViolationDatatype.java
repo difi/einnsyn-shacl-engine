@@ -1,7 +1,7 @@
 package no.difi.einnsyn.shacl_engine.violations;
 
 import no.difi.einnsyn.SHACLExt;
-import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.Datatype;
+import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.DatatypeConstraint;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -21,7 +21,7 @@ public class ConstraintViolationDatatype extends ConstraintViolationWithStatemen
     private final IRI actualDatatype;
     private final IRI expectedDatatype;
 
-    public ConstraintViolationDatatype(Datatype propertyConstraint, Resource resource, String s, Statement failingStatement, IRI actualDatatype) {
+    public ConstraintViolationDatatype(DatatypeConstraint propertyConstraint, Resource resource, String s, Statement failingStatement, IRI actualDatatype) {
         super(propertyConstraint, resource, s, failingStatement);
         this.actualDatatype = actualDatatype;
         this.expectedDatatype = propertyConstraint.getDatatype();

@@ -2,9 +2,9 @@ package no.difi.einnsyn.shacl_engine.rules;
 
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.sesameutils.SesameUtils;
-import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.Class;
-import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.Datatype;
-import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.MinMax;
+import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.ClassConstraint;
+import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.DatatypeConstraint;
+import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.MinMaxConstraint;
 import no.difi.einnsyn.shacl_engine.violations.*;
 import org.openrdf.model.*;
 import org.openrdf.query.QueryResults;
@@ -44,17 +44,17 @@ public abstract class PropertyConstraint {
         static PropertyConstraint create(Resource object, RepositoryConnection shapesConnection) {
 
             if(shapesConnection.hasStatement(object, SHACL.class_property, null, true)) {
-                return new Class(object, shapesConnection, getSeverity(object, shapesConnection));
+                return new ClassConstraint(object, shapesConnection, getSeverity(object, shapesConnection));
             }
 
             if(shapesConnection.hasStatement(object, SHACL.datatype, null, true)) {
-                return new Datatype(object, shapesConnection, getSeverity(object, shapesConnection));
+                return new DatatypeConstraint(object, shapesConnection, getSeverity(object, shapesConnection));
             }
 
             if(shapesConnection.hasStatement(object, SHACL.minCount, null, true) ||
                 shapesConnection.hasStatement(object, SHACL.maxCount, null, true)) {
 
-                return new MinMax(object, shapesConnection, getSeverity(object, shapesConnection));
+                return new MinMaxConstraint(object, shapesConnection, getSeverity(object, shapesConnection));
             }
 
             // Throw exception for unhandled contraints.

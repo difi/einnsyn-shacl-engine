@@ -1,7 +1,7 @@
 package no.difi.einnsyn.shacl_engine.violations;
 
 import no.difi.einnsyn.SHACLExt;
-import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.MinMax;
+import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.MinMaxConstraint;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.vocabulary.RDF;
@@ -22,7 +22,7 @@ public class ConstraintViolationMaxCount extends ConstraintViolation {
     private Optional<Integer> maxCount;
     private long actual;
 
-    public ConstraintViolationMaxCount(MinMax propertyConstraint, Resource resource, String s) {
+    public ConstraintViolationMaxCount(MinMaxConstraint propertyConstraint, Resource resource, String s) {
         super(propertyConstraint, resource, s);
         this.maxCount = propertyConstraint.getMaxCount();
         this.actual = propertyConstraint.getCount();

@@ -81,10 +81,11 @@ public class SHACLValidatorTestAllTestData {
                     vc.validationResults();
                     try {
                         vc.toJson();
+                        System.out.println(vc.toJson().toString());
                     } catch (JsonLdError jsonLdError) {
                         throw new RuntimeException(jsonLdError);
                     }
-                    System.out.println(vc);
+
                 }));
 
                 ranAtLeastOneTest = true;
