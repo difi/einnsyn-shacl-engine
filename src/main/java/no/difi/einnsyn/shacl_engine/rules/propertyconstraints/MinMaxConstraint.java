@@ -6,7 +6,6 @@ import no.difi.einnsyn.shacl_engine.rules.PropertyConstraint;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationMaxCount;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationMinCount;
-import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.repository.RepositoryConnection;
@@ -27,8 +26,8 @@ public class MinMaxConstraint extends PropertyConstraint {
     protected Optional<Integer> maxCount;
     private long count;
 
-    public MinMaxConstraint(Resource object, RepositoryConnection shapes, IRI severity) {
-        super(object, shapes, severity);
+    public MinMaxConstraint(Resource object, RepositoryConnection shapes) {
+        super(object, shapes);
 
         this.minCount = SesameUtils.getOptionalOneInteger(shapes, object, SHACL.minCount);
         this.maxCount = SesameUtils.getOptionalOneInteger(shapes, object, SHACL.maxCount);

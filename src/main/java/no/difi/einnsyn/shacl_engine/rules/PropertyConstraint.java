@@ -21,11 +21,13 @@ import java.util.List;
 public abstract class PropertyConstraint {
 
     protected IRI predicate;
-    protected IRI severity;
+    protected IRI severity = SHACL.Violation;
 
-    protected PropertyConstraint(Resource object, RepositoryConnection shapes, IRI severity) {
-        predicate = (IRI) shapes.getStatements(object, SHACL.predicate, null).next().getObject();
-        this.severity = severity;
+    protected PropertyConstraint(Resource subject, RepositoryConnection shapesConnection) {
+        predicate = (IRI) shapesConnection.getStatements(subject, SHACL.predicate, null).next().getObject();
+        if (shapesConnection.hasStatement(subject, SHACL.severity, null, true)) {
+            this.severity = SesameUtils.getExactlyOneIri(shapesConnection, subject, SHACL.severity);
+        }
     }
 
     protected abstract void validate(Resource resource, List<Statement> list,
@@ -44,17 +46,17 @@ public abstract class PropertyConstraint {
         static PropertyConstraint create(Resource object, RepositoryConnection shapesConnection) {
 
             if(shapesConnection.hasStatement(object, SHACL.class_property, null, true)) {
-                return new ClassConstraint(object, shapesConnection, getSeverity(object, shapesConnection));
+                return new ClassConstraint(object, shapesConnection);
             }
 
             if(shapesConnection.hasStatement(object, SHACL.datatype, null, true)) {
-                return new DatatypeConstraint(object, shapesConnection, getSeverity(object, shapesConnection));
+                return new DatatypeConstraint(object, shapesConnection);
             }
 
             if(shapesConnection.hasStatement(object, SHACL.minCount, null, true) ||
                 shapesConnection.hasStatement(object, SHACL.maxCount, null, true)) {
 
-                return new MinMaxConstraint(object, shapesConnection, getSeverity(object, shapesConnection));
+                return new MinMaxConstraint(object, shapesConnection);
             }
 
             // Throw exception for unhandled contraints.
@@ -66,13 +68,5 @@ public abstract class PropertyConstraint {
             throw new UnsupportedOperationException("Property constraint not implemented. \n" + shaclRuleAsTurtle);
         }
 
-        static IRI getSeverity(Resource object, RepositoryConnection shapesConnection) {
-            if (shapesConnection.hasStatement(object, SHACL.severity, null, true)) {
-                RepositoryResult<Statement> severityStatement = shapesConnection.getStatements(object, SHACL.severity, null);
-                return (IRI) severityStatement.next().getObject();
-            }
-
-            return SHACL.Violation;
-        }
     }
 }
