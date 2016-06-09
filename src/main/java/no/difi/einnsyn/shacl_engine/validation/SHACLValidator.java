@@ -10,6 +10,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.reasoner.Reasoner;
 import org.apache.jena.reasoner.ReasonerRegistry;
+import org.openrdf.IsolationLevels;
 import org.openrdf.model.Statement;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.query.QueryResults;
@@ -134,8 +135,8 @@ public class SHACLValidator {
         long before = System.currentTimeMillis();
 
         try (RepositoryConnection inferencedConnection = inferencedRepository.getConnection()) {
+            inferencedConnection.begin(IsolationLevels.NONE);
 
-            inferencedConnection.begin();
             try (RepositoryConnection dataConnection = data.getConnection()) {
                 inferencedConnection.add(dataConnection.getStatements(null, null, null));
             }
