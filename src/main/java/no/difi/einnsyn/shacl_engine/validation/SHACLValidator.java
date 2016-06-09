@@ -65,8 +65,6 @@ public class SHACLValidator {
             return;
         }
 
-        System.out.println(SesameUtils.repositoryToString(shaclRules, RDFFormat.NTRIPLES));
-
         try (RepositoryConnection shapesConnection = shaclRules.getConnection()) {
             RepositoryResult<Statement> statements = shapesConnection.getStatements(null, RDF.TYPE, SHACL.Shape);
 
