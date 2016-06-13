@@ -23,18 +23,16 @@ public class Shape {
 
     private Resource scopeClass;
     private final List<PropertyConstraint> properties = new ArrayList<>();
-    boolean strictMode;
-    protected IRI severity = SHACL.Violation;
+    private boolean strictMode;
 
     public Shape(Resource subject, RepositoryConnection shapesConnection, boolean strictMode) {
         this.strictMode = strictMode;
-        this.severity = severity;
         scopeClass = (Resource) shapesConnection.getStatements(subject, SHACL.scopeClass, null).next().getObject();
 
         RepositoryResult<Statement> statements = shapesConnection.getStatements(subject, SHACL.property, null);
 
         Iterations.stream(statements)
-            .map(statement -> PropertyConstraint.Factory.create((Resource) statement.getObject(), shapesConnection, severity, strictMode))
+            .map(statement -> PropertyConstraint.Factory.create((Resource) statement.getObject(), shapesConnection, strictMode))
             .forEach(properties::add);
 
     }
@@ -60,7 +58,7 @@ public class Shape {
         Iterations.stream(statements)
             .peek(
                 statement -> {
-                    if (statement instanceof MemStatement) {
+                    if (strictMode && statement instanceof MemStatement) {
                         ((MemStatement) statement).setTillSnapshot(Integer.MAX_VALUE - 1);
                     }
                 }

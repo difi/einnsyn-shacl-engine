@@ -26,10 +26,10 @@ import java.util.Map;
  */
 public class ClassInConstraint extends MinMaxConstraint {
 
-    private Map<IRI, IRI> classIn = new HashMap<>();
+    private final Map<IRI, IRI> classIn = new HashMap<>();
 
-    public ClassInConstraint(Resource subject, RepositoryConnection shapesConnection, IRI severity, boolean strictMode) {
-        super(subject, shapesConnection, severity, strictMode);
+    public ClassInConstraint(Resource subject, RepositoryConnection shapesConnection, boolean strictMode) {
+        super(subject, shapesConnection, strictMode);
 
         Resource classInHead = SesameUtils.getExactlyOneResource(shapesConnection, subject, SHACL.classIn);
         while(!classInHead.equals(RDF.NIL)) {

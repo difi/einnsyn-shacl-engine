@@ -123,21 +123,20 @@ public class SHACLValidator {
 
 
             if (strictMode) {
-
-
                 try (RepositoryConnection originalDataConnection = originalData.getConnection();) {
-                    RepositoryResult<Statement> statements = originalDataConnection.getStatements(null, null, null);
-                    while (statements.hasNext()) {
-                        Statement next = statements.next();
-                        RepositoryResult<Statement> statements1 = dataConnection.getStatements(next.getSubject(), next.getPredicate(), next.getObject());
-                        if(statements1.hasNext()){
-                            next = statements1.next();
+                    RepositoryResult<Statement> originalDataStatements = originalDataConnection.getStatements(null, null, null);
+                    while (originalDataStatements.hasNext()) {
+                        Statement statement = originalDataStatements.next();
+                        RepositoryResult<Statement> matchingStatementFromValidatedRepository = dataConnection.getStatements(statement.getSubject(), statement.getPredicate(), statement.getObject());
+                        if(matchingStatementFromValidatedRepository.hasNext()){
+                            statement = matchingStatementFromValidatedRepository.next();
                         }
 
-                        if (next instanceof MemStatement) {
-                            if (((MemStatement) next).getTillSnapshot() == Integer.MAX_VALUE) {
+                        if (statement instanceof MemStatement) {
+                            //Till snapshot abused to mark validated triples
+                            if (((MemStatement) statement).getTillSnapshot() == Integer.MAX_VALUE) {
                                 failed[0] = true;
-                                strictModeStatementHandler.handle(next);
+                                strictModeStatementHandler.handle(statement);
                             }
                         }
 

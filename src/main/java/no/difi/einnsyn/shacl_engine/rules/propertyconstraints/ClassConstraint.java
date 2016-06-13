@@ -21,10 +21,10 @@ import java.util.List;
  */
 public class ClassConstraint extends MinMaxConstraint {
 
-    private IRI class_property;
+    private final IRI class_property;
 
-    public ClassConstraint(Resource object, RepositoryConnection shapes, IRI severity, boolean strictMode) {
-        super(object, shapes, severity, strictMode);
+    public ClassConstraint(Resource object, RepositoryConnection shapes, boolean strictMode) {
+        super(object, shapes, strictMode);
 
         this.class_property = SesameUtils.getExactlyOneIri(shapes, object, SHACL.class_property);
     }

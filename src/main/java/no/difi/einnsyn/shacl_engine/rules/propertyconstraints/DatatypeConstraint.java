@@ -22,10 +22,10 @@ import java.util.List;
  */
 public class DatatypeConstraint extends MinMaxConstraint {
 
-    private IRI datatype;
+    private final IRI datatype;
 
-    public DatatypeConstraint(Resource object, RepositoryConnection shapes, IRI severity, boolean strictMode) {
-        super(object, shapes, severity, strictMode);
+    public DatatypeConstraint(Resource object, RepositoryConnection shapes, boolean strictMode) {
+        super(object, shapes, strictMode);
 
         this.datatype = SesameUtils.getExactlyOneIri(shapes, object, SHACL.datatype);
     }
