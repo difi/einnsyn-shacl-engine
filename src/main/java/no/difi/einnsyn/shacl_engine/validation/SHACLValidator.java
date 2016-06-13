@@ -1,5 +1,6 @@
 package no.difi.einnsyn.shacl_engine.validation;
 
+import info.aduna.iteration.Iterations;
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.sesameutils.SesameUtils;
 import no.difi.einnsyn.shacl_engine.rules.Shape;
@@ -20,7 +21,6 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFFormat;
-import org.openrdf.sail.NotifyingSailConnection;
 import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
 import org.openrdf.sail.memory.MemoryStore;
 import org.openrdf.sail.memory.model.MemStatement;
@@ -115,7 +115,7 @@ public class SHACLValidator {
 
             shapes.stream()
                 .forEach(shape -> shape.validate(dataConnection, (violation) -> {
-                    if(violation.getSeverity().equals(SHACL.Violation)) {
+                    if (violation.getSeverity().equals(SHACL.Violation)) {
                         failed[0] = true;
                     }
                     constraintViolationHandler.handle(violation);
@@ -124,25 +124,22 @@ public class SHACLValidator {
 
             if (strictMode) {
                 try (RepositoryConnection originalDataConnection = originalData.getConnection();) {
-                    RepositoryResult<Statement> originalDataStatements = originalDataConnection.getStatements(null, null, null);
-                    while (originalDataStatements.hasNext()) {
-                        Statement statement = originalDataStatements.next();
-                        RepositoryResult<Statement> matchingStatementFromValidatedRepository = dataConnection.getStatements(statement.getSubject(), statement.getPredicate(), statement.getObject());
-                        if(matchingStatementFromValidatedRepository.hasNext()){
-                            statement = matchingStatementFromValidatedRepository.next();
-                        }
 
-                        if (statement instanceof MemStatement) {
-                            //Till snapshot abused to mark validated triples
-                            if (((MemStatement) statement).getTillSnapshot() == Integer.MAX_VALUE) {
-                                failed[0] = true;
-                                strictModeStatementHandler.handle(statement);
-                            }
-                        }
+                    Iterations.stream(originalDataConnection.getStatements(null, null, null))
+                        .map(statement -> {
+                            RepositoryResult<Statement> matchingStatementFromValidatedRepository = dataConnection.getStatements(statement.getSubject(), statement.getPredicate(), statement.getObject());
+                            boolean statementExistsInValidatedData = matchingStatementFromValidatedRepository.hasNext();
 
+                            return statementExistsInValidatedData ? matchingStatementFromValidatedRepository.next() : statement;
+                        })
+                        //.filter(statement -> statement instanceof MemStatement) commented out  because crashes are preferable to someone accidentally using strict mode without an in memory repository
+                        .map(statement -> ((MemStatement) statement))
+                        .filter(memStatement -> memStatement.getTillSnapshot() == Integer.MAX_VALUE)
+                        .peek(memStatement -> failed[0] = true)
+                        .forEach(strictModeStatementHandler::handle);
 
-                    }
                 }
+
 
             }
 
@@ -205,7 +202,6 @@ public class SHACLValidator {
 
             inferencedConnection.commit();
         }
-
 
 
         return inferencedRepository;
