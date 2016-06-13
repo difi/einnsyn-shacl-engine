@@ -125,22 +125,49 @@ public class SHACLValidator {
             if (strictMode) {
                 try (RepositoryConnection originalDataConnection = originalData.getConnection();) {
 
+                    /* Extract all triples that have not been validated
+                    * these are triples where there is no rule that matches
+                    * possible due to a misspelled predicate, or more malicious intent like introducing a new status
+                    *
+                    * The general approach is that there are two sets of data
+                    *   originalDataConnection contains the data that should have been validated
+                    *   dataConnection contains the data that was validated
+                    *
+                    * In dataConnection, the data that was acutally validated has been marked by setting the tillSnapshot to Integer.MAX_VALUE -1
+                     *
+                     * To find the triples that did not get checked by a SHACL rule we have to take every triple in originalDataConnection
+                     * and check that it either does not exist in dataConnection, or that it exists as a statement in dataConnection with tillSnapshot == Integer.MAX_VALUE
+                    */
+
+
+                    // start by iterating over all the triples in the incoming data
                     Iterations.stream(originalDataConnection.getStatements(null, null, null))
+
+                        // get hold of the validated triple that matches the one from the incoming data
                         .map(statement -> {
                             RepositoryResult<Statement> matchingStatementFromValidatedRepository = dataConnection.getStatements(statement.getSubject(), statement.getPredicate(), statement.getObject());
                             boolean statementExistsInValidatedData = matchingStatementFromValidatedRepository.hasNext();
 
+                            // return the validated triple, or if it does not exist, then the original triple
                             return statementExistsInValidatedData ? matchingStatementFromValidatedRepository.next() : statement;
                         })
+
                         //.filter(statement -> statement instanceof MemStatement) commented out  because crashes are preferable to someone accidentally using strict mode without an in memory repository
+
+                        // cast to MemStatement
                         .map(statement -> ((MemStatement) statement))
+
+                        // Abuse till snapshot for marking which triples have been validated.
+                        // The validation methods run previously will have set tillSnapshot == Integer.MAX_VALUE -1
                         .filter(memStatement -> memStatement.getTillSnapshot() == Integer.MAX_VALUE)
+
+                        // side effect to mark the validation as failed
                         .peek(memStatement -> failed[0] = true)
+
+                        // notify the statement handler of the statements that caused the validation to fail
                         .forEach(strictModeStatementHandler::handle);
 
                 }
-
-
             }
 
             return !failed[0];
