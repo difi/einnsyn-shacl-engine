@@ -7,11 +7,15 @@ import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
+import org.openrdf.model.Value;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Checks that the o in s --p--> o is an instance of the class specified in the SHACL
@@ -20,17 +24,17 @@ import java.util.List;
  * https://www.w3.org/TR/shacl/#AbstractClassPropertyConstraint
  *
  */
-public class ClassIn extends MinMaxConstraint {
+public class ClassInConstraint extends MinMaxConstraint {
 
-    private List<IRI> classIn = new ArrayList<>();
+    private Map<IRI, IRI> classIn = new HashMap<>();
 
-    public ClassIn(Resource subject, RepositoryConnection shapesConnection, IRI severity, boolean strictMode) {
+    public ClassInConstraint(Resource subject, RepositoryConnection shapesConnection, IRI severity, boolean strictMode) {
         super(subject, shapesConnection, severity, strictMode);
 
         Resource classInHead = SesameUtils.getExactlyOneResource(shapesConnection, subject, SHACL.classIn);
         while(!classInHead.equals(RDF.NIL)) {
             IRI headFirst = SesameUtils.getExactlyOneIri(shapesConnection, classInHead, RDF.FIRST);
-            classIn.add(headFirst);
+            classIn.put(headFirst, headFirst);
             classInHead = SesameUtils.getExactlyOneResource(shapesConnection, classInHead, RDF.REST);
         }
 
@@ -47,12 +51,17 @@ public class ClassIn extends MinMaxConstraint {
             .filter(statement -> {
                 Resource object = (Resource) statement.getObject();
                 boolean ok = false;
-                for(IRI possibleClass : classIn) {
-                    if(dataGraphConnection.hasStatement(object, RDF.TYPE, possibleClass, true)) {
+
+                RepositoryResult<Statement> types = dataGraphConnection.getStatements(object, RDF.TYPE, null, true);
+                while(types.hasNext()){
+                    IRI type = (IRI) types.next().getObject();
+                    if(classIn.containsKey(type)){
                         ok = true;
                         break;
                     }
+
                 }
+
                 return !ok;
             })
 

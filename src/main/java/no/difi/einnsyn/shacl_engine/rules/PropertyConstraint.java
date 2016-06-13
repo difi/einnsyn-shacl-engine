@@ -3,7 +3,7 @@ package no.difi.einnsyn.shacl_engine.rules;
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.sesameutils.SesameUtils;
 import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.ClassConstraint;
-import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.ClassIn;
+import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.ClassInConstraint;
 import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.DatatypeConstraint;
 import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.MinMaxConstraint;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
@@ -60,7 +60,7 @@ public abstract class PropertyConstraint {
             }
 
             if (shapesConnection.hasStatement(object, SHACL.classIn, null, true)) {
-                return new ClassIn(object, shapesConnection, severity, strictMode);
+                return new ClassInConstraint(object, shapesConnection, severity, strictMode);
             }
 
             if (shapesConnection.hasStatement(object, SHACL.minCount, null, true) ||

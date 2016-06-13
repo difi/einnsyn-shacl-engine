@@ -20,6 +20,7 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.sail.NotifyingSailConnection;
 import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
 import org.openrdf.sail.memory.MemoryStore;
 import org.openrdf.sail.memory.model.MemStatement;
@@ -152,7 +153,6 @@ public class SHACLValidator {
 
     private static Repository addInferencingUsingJena(Repository data, Repository ontology) {
 
-        long before = System.currentTimeMillis();
 
         Model dataJena = ModelFactory.createDefaultModel();
         Model ontologyJena = ModelFactory.createDefaultModel();
@@ -177,34 +177,37 @@ public class SHACLValidator {
 
 
         Repository repository = SesameUtils.stringToRepository(stringWriter.toString(), RDFFormat.NTRIPLES);
-        long after = System.currentTimeMillis();
-        System.out.println("Reasoning took: " + (after - before));
 
         return repository;
 
     }
 
     private static Repository addInferencing(Repository data, Repository ontology) {
-        Repository inferencedRepository = new SailRepository(new ForwardChainingRDFSInferencer(new MemoryStore()));
+        MemoryStore baseSail = new MemoryStore();
+        Repository inferencedRepository = new SailRepository(new ForwardChainingRDFSInferencer(baseSail));
         inferencedRepository.initialize();
 
-        long before = System.currentTimeMillis();
 
         try (RepositoryConnection inferencedConnection = inferencedRepository.getConnection()) {
-            inferencedConnection.begin(IsolationLevels.NONE);
+            inferencedConnection.begin(IsolationLevels.READ_UNCOMMITTED);
 
             try (RepositoryConnection dataConnection = data.getConnection()) {
+                dataConnection.begin(IsolationLevels.READ_UNCOMMITTED);
                 inferencedConnection.add(dataConnection.getStatements(null, null, null));
+                dataConnection.commit();
             }
 
             try (RepositoryConnection ontologyConnection = ontology.getConnection()) {
+                ontologyConnection.begin(IsolationLevels.READ_UNCOMMITTED);
+
                 inferencedConnection.add(ontologyConnection.getStatements(null, null, null));
+                ontologyConnection.commit();
             }
+
             inferencedConnection.commit();
         }
 
-        long after = System.currentTimeMillis();
-        System.out.println("Reasoning took: " + (after - before));
+
 
         return inferencedRepository;
     }
