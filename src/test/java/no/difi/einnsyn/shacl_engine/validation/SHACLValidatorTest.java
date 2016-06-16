@@ -9,11 +9,11 @@ import no.difi.einnsyn.SHACLExt;
 import no.difi.einnsyn.sesameutils.SesameUtils;
 import no.difi.einnsyn.shacl_engine.rules.PropertyConstraint;
 import no.difi.einnsyn.shacl_engine.rules.Shape;
+import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.ClassConstraint;
 import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.DatatypeConstraint;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolation;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationClass;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationDatatype;
-import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.ClassConstraint;
 import org.junit.Test;
 import org.openrdf.model.Statement;
 import org.openrdf.model.impl.SimpleValueFactory;
@@ -157,7 +157,7 @@ public class SHACLValidatorTest {
         List<PropertyConstraint> properties = (List<PropertyConstraint>) ReflectionTestUtils.getField(shape, "properties");
 
         List<ConstraintViolation> expectedViolations = new ArrayList<>();
-        expectedViolations.add(new ConstraintViolationClass(((ClassConstraint) properties.get(0)), instance.createIRI("http://example.org/1"), "Object is a literal, expected IRI.", null));
+        expectedViolations.add(new ConstraintViolationClass(((ClassConstraint) properties.get(0)), instance.createIRI("http://example.org/1"), "Object is a literal, expected IRI.", null, null));
 
         assertEquals("", expectedViolations.size(), violations.size());
         assertTrue("", violations.containsAll(expectedViolations));

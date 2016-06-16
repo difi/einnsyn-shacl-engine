@@ -1,5 +1,6 @@
 package no.difi.einnsyn.shacl_engine.rules.propertyconstraints;
 
+import info.aduna.iteration.Iterations;
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.sesameutils.SesameUtils;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationClass;
@@ -11,6 +12,7 @@ import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryConnection;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Checks that the o in s --p--> o is an instance of the class specified in the SHACL
@@ -44,14 +46,14 @@ public class ClassConstraint extends MinMaxConstraint {
                 !(dataGraphConnection.hasStatement((Resource) statement.getObject(), RDF.TYPE, class_property, true)))
 
             .forEach(statement -> constraintViolationHandler.handle(
-                new ConstraintViolationClass(this, resource, "Incorrect class type.", statement))
-            );
+                new ConstraintViolationClass(this, resource, "Incorrect class type.", statement, Iterations.stream(dataGraphConnection.getStatements(((Resource) statement.getObject()), RDF.TYPE, null, true )).collect(Collectors.toList()))
+            ));
 
         list.stream()
             .filter(statement -> statement.getPredicate().equals(predicate))
             .filter(statement -> !(statement.getObject() instanceof Resource))
             .forEach(statement -> constraintViolationHandler.handle(
-                new ConstraintViolationClass(this, resource, "Object is a literal, expected IRI.", statement))
+                new ConstraintViolationClass(this, resource, "Object is a literal, expected IRI.", statement, null ))
             );
     }
 

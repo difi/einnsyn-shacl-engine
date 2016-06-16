@@ -22,7 +22,7 @@ public class ConstraintViolationClass extends ConstraintViolationWithStatement {
     private IRI class_property;
     private Statement failingStatement;
 
-    public ConstraintViolationClass(ClassConstraint propertyConstraint, Resource resource, String message, Statement failingStatement) {
+    public ConstraintViolationClass(ClassConstraint propertyConstraint, Resource resource, String message, Statement failingStatement, List<Statement> actualStatements) {
         super(propertyConstraint, resource, message, failingStatement);
 
         if (propertyConstraint.getClassProperty() != null) {
@@ -42,6 +42,7 @@ public class ConstraintViolationClass extends ConstraintViolationWithStatement {
         statements.add(factory.createStatement(validationResultsIri, SHACLExt.expected, factory.createLiteral(class_property.toString())));
         statements.add(factory.createStatement(validationResultsIri, SHACLExt.actual, failingStatement.getObject()));
         statements.add(factory.createStatement(validationResultsIri, RDF.TYPE, SHACLExt.ConstraintViolationClass));
+
         return statements;
     }
 
