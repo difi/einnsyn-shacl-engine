@@ -1,6 +1,7 @@
 {
   "@context": {
     "sh-ext":"http://example.org/shacl-ext#",
+    "arkiv":"http://www.arkivverket.no/standarder/noark5/arkivstruktur/",
     "sh":"http://www.w3.org/ns/shacl#",
     "severity": {"@id":"sh:severity", "@type":"@id"},
     "focusNode": {"@id":"sh:focusNode", "@type":"@id"},
