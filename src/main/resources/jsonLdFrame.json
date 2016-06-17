@@ -13,7 +13,8 @@
     "expected": {"@id":"sh-ext:expected"},
     "comment": {"@id":"http://www.w3.org/2000/01/rdf-schema#comment"},
     "type":"@type",
-    "id":"@id"
+    "id":"@id",
+    "value":"@value"
   },
   "@explicit": true,
   "@type":"sh:ValidationResult",
