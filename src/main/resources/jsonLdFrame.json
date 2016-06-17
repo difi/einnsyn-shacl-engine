@@ -11,7 +11,9 @@
     "object": {"@id":"sh:object"},
     "actual": {"@id":"sh-ext:actual"},
     "expected": {"@id":"sh-ext:expected"},
-    "comment": {"@id":"http://www.w3.org/2000/01/rdf-schema#comment"}
+    "comment": {"@id":"http://www.w3.org/2000/01/rdf-schema#comment"},
+    "type":"@type",
+    "id":"@id"
   },
   "@explicit": true,
   "@type":"sh:ValidationResult",

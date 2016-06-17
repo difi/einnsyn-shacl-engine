@@ -3,10 +3,10 @@ package no.difi.einnsyn.shacl_engine.rules.propertyconstraints;
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.sesameutils.SesameUtils;
 import no.difi.einnsyn.shacl_engine.rules.PropertyConstraint;
+import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationExactCount;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationMaxCount;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationMinCount;
-import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.repository.RepositoryConnection;
@@ -64,6 +64,12 @@ public class MinMaxConstraint extends PropertyConstraint {
         count = peek
             .count();
 
+        if(maxCount.isPresent() && minCount.isPresent()) {
+            if(maxCount.get() < count || minCount.get() > count) {
+                constraintViolationHandler.handle(new ConstraintViolationExactCount(this, resource, "was " + count));
+            }
+        } else {
+
         if (maxCount.isPresent()) {
             if (maxCount.get() < count) {
                 constraintViolationHandler.handle(new ConstraintViolationMaxCount(this, resource, "was " + count));
@@ -75,7 +81,7 @@ public class MinMaxConstraint extends PropertyConstraint {
                 constraintViolationHandler.handle(new ConstraintViolationMinCount(this, resource, "was " + count));
             }
         }
-    }
+    } }
 
     @Override
     public String toString() {
