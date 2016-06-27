@@ -3,7 +3,7 @@ package no.difi.einnsyn.shacl_engine.validation;
 import com.github.jsonldjava.core.JsonLdError;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import no.difi.einnsyn.Arkiv;
+import no.difi.einnsyn.ArkivN5;
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.SHACLExt;
 import no.difi.einnsyn.sesameutils.SesameUtils;
@@ -164,7 +164,7 @@ public class SHACLValidatorTest {
 
                 assertEquals("", "utfort", asJsonObject.get("object").getAsString());
                 assertEquals("", "utfort", asJsonObject.get("actual").getAsString());
-                assertEquals("", Arkiv.Journalpoststatus.toString(), asJsonObject.get("expected").getAsString());
+                assertEquals("", ArkivN5.Journalpoststatus.toString(), asJsonObject.get("expected").getAsString());
 
                 String message = asJsonObject.get("message").getAsString();
                 assertEquals("", "Object is a literal, expected IRI.", message);
