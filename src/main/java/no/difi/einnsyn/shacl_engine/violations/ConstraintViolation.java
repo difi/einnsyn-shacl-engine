@@ -34,6 +34,7 @@ import java.util.UUID;
  *
  */
 public class ConstraintViolation {
+    public static final String TYPE = "type";
     final PropertyConstraint propertyConstraint;
     final Resource resource;
     final String message;
@@ -111,6 +112,8 @@ public class ConstraintViolation {
             parse.getAsJsonObject().remove("@context");
             JsonArray asJsonArray = parse.getAsJsonObject().getAsJsonArray("@graph");
 
+            setViolationType(asJsonArray);
+
             if(asJsonArray.size() != 1) {
                 throw new IllegalStateException("More than one result was generated for a constraint violation");
             }
@@ -120,6 +123,12 @@ public class ConstraintViolation {
         } catch (IOException e) {
             throw new IllegalStateException("There should never be an IOException when reading from a string");
         }
+    }
+
+    private void setViolationType(JsonArray asJsonArray) {
+        JsonElement type = asJsonArray.get(0).getAsJsonObject().get(TYPE).getAsJsonArray().get(1);
+        asJsonArray.get(0).getAsJsonObject().remove(TYPE);
+        asJsonArray.get(0).getAsJsonObject().add(TYPE, type);
     }
 
     @Override
