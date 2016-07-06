@@ -63,7 +63,6 @@ public class ConstraintViolation {
         List<Statement> statements = new ArrayList<>();
         ValueFactory factory = SimpleValueFactory.getInstance();
 
-        statements.add(factory.createStatement(validationResultsIri, RDF.TYPE, SHACL.ValidationResult));
         statements.add(factory.createStatement(validationResultsIri, SHACL.focusNode, resource));
         statements.add(factory.createStatement(validationResultsIri, SHACL.subject, resource));
         statements.add(factory.createStatement(validationResultsIri, SHACL.predicate, propertyConstraint.getPredicate()));
@@ -112,7 +111,6 @@ public class ConstraintViolation {
             parse.getAsJsonObject().remove("@context");
             JsonArray asJsonArray = parse.getAsJsonObject().getAsJsonArray("@graph");
 
-            setViolationType(asJsonArray);
 
             if(asJsonArray.size() != 1) {
                 throw new IllegalStateException("More than one result was generated for a constraint violation");
@@ -125,11 +123,7 @@ public class ConstraintViolation {
         }
     }
 
-    private void setViolationType(JsonArray asJsonArray) {
-        JsonElement type = asJsonArray.get(0).getAsJsonObject().get(TYPE).getAsJsonArray().get(1);
-        asJsonArray.get(0).getAsJsonObject().remove(TYPE);
-        asJsonArray.get(0).getAsJsonObject().add(TYPE, type);
-    }
+
 
     @Override
     public String toString() {
