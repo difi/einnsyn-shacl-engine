@@ -86,6 +86,32 @@ public class SHACLValidatorTest {
     }
 
     @Test
+    public void exactCountTest() throws IOException {
+        String dir = "testdata/exactCount";
+
+        SHACLValidator shaclValidator = new SHACLValidator(getShacl(dir), null);
+
+        assertFalse(shaclValidator.validate(
+            getData(dir+"/fail"),
+            violation -> {
+                System.out.println(violation);
+
+                try {
+                    JsonElement jsonElement = violation.toJson();
+                    JsonObject asJsonObject = jsonElement.getAsJsonObject();
+
+                    assertEquals("", 1, asJsonObject.get("expected").getAsJsonObject().get("@value").getAsInt());
+                    assertEquals("", 2, asJsonObject.get("actual").getAsJsonObject().get("@value").getAsInt());
+
+                } catch (JsonLdError jsonLdError) {
+                    assertTrue(jsonLdError.getMessage(), false);
+                }
+            }
+        ));
+
+    }
+
+    @Test
     public void minCountTest() throws Exception {
         String dir = "testData/minCount1";
 

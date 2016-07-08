@@ -64,7 +64,7 @@ public class MinMaxConstraint extends PropertyConstraint {
         count = peek
             .count();
 
-        if(maxCount.isPresent() && minCount.isPresent()) {
+        if(maxCount.isPresent() && minCount.isPresent() && maxCount.equals(minCount))  {
             if(maxCount.get() < count || minCount.get() > count) {
                 constraintViolationHandler.handle(new ConstraintViolationExactCount(this, resource, "was " + count));
             }
