@@ -102,6 +102,7 @@ public class SHACLValidatorTest {
 
                     assertEquals("", 1, asJsonObject.get("expected").getAsJsonObject().get("value").getAsInt());
                     assertEquals("", 2, asJsonObject.get("actual").getAsJsonObject().get("value").getAsInt());
+                    assertEquals("", "sh-ext:ConstraintViolationExactCount", asJsonObject.get("type").getAsString());
 
                 } catch (JsonLdError jsonLdError) {
                     assertTrue(jsonLdError.getMessage(), false);
