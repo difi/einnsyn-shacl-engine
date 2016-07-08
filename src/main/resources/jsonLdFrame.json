@@ -18,6 +18,13 @@
     "value":"@value"
   },
   "@explicit": true,
+  "@type" : [
+    "sh-ext:ConstraintViolationExactCount",
+    "sh-ext:ConstraintViolationClass" ,
+    "sh-ext:ConstraintViolationDatatype",
+    "sh-ext:ConstraintViolationMaxCount",
+    "sh-ext:ConstraintViolationMinCount"
+  ],
   "severity": {},
   "focusNode":{},
   "subject": {},

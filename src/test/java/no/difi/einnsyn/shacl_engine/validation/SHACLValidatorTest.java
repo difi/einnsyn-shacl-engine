@@ -100,8 +100,8 @@ public class SHACLValidatorTest {
                     JsonElement jsonElement = violation.toJson();
                     JsonObject asJsonObject = jsonElement.getAsJsonObject();
 
-                    assertEquals("", 1, asJsonObject.get("expected").getAsJsonObject().get("@value").getAsInt());
-                    assertEquals("", 2, asJsonObject.get("actual").getAsJsonObject().get("@value").getAsInt());
+                    assertEquals("", 1, asJsonObject.get("expected").getAsJsonObject().get("value").getAsInt());
+                    assertEquals("", 2, asJsonObject.get("actual").getAsJsonObject().get("value").getAsInt());
 
                 } catch (JsonLdError jsonLdError) {
                     assertTrue(jsonLdError.getMessage(), false);
