@@ -127,8 +127,8 @@ public class SHACLValidatorTest {
                     JsonElement jsonElement = violation.toJson();
                     JsonObject asJsonObject = jsonElement.getAsJsonObject();
 
-                    assertEquals("", 1, asJsonObject.get("expected").getAsJsonObject().get("@value").getAsInt());
-                    assertEquals("", 0, asJsonObject.get("actual").getAsJsonObject().get("@value").getAsInt());
+                    assertEquals("", 1, asJsonObject.get("expected").getAsJsonObject().get("value").getAsInt());
+                    assertEquals("", 0, asJsonObject.get("actual").getAsJsonObject().get("value").getAsInt());
 
                 } catch (JsonLdError jsonLdError) {
                     assertTrue(jsonLdError.getMessage(), false);
@@ -171,8 +171,8 @@ public class SHACLValidatorTest {
 
                 System.out.println(jsonElement);
                 assertEquals("",
-                    "\"@type\":[\"sh:ValidationResult\",\"sh-ext:ConstraintViolationClass\"],\"actual\":\"utfort\",\"expected\":\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/Journalpoststatus\",\"comment\":\"{\\\"class_property\\\":{\\\"namespace\\\":\\\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/\\\",\\\"localName\\\":\\\"Journalpoststatus\\\",\\\"hashCode\\\":-2002688408},\\\"minCount\\\":{},\\\"maxCount\\\":{},\\\"count\\\":1,\\\"strictMode\\\":false,\\\"predicate\\\":{\\\"namespace\\\":\\\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/\\\",\\\"localName\\\":\\\"journalpoststatus\\\",\\\"hashCode\\\":-1646451064},\\\"severity\\\":{\\\"iriString\\\":\\\"http://www.w3.org/ns/shacl#Violation\\\",\\\"localNameIdx\\\":-1}}\",\"focusNode\":\"http://example.org/1\",\"message\":\"Object is a literal, expected IRI.\",\"object\":\"utfort\",\"predicate\":\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/journalpoststatus\",\"severity\":\"sh:Violation\",\"subject\":\"http://example.org/1\"}",
-                    jsonElement.toString().replaceAll("\\{\"@id\":(.*?),","")
+                    "{\"id\":\"http://example.org/d41d0b8a-b727-4d29-b0ca-e19de57d5d36\",\"type\":\"sh-ext:ConstraintViolationClass\",\"actual\":\"utfort\",\"expected\":\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/Journalpoststatus\",\"comment\":\"{\\\"class_property\\\":{\\\"namespace\\\":\\\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/\\\",\\\"localName\\\":\\\"Journalpoststatus\\\",\\\"hashCode\\\":-2002688408},\\\"minCount\\\":{},\\\"maxCount\\\":{},\\\"count\\\":1,\\\"strictMode\\\":false,\\\"predicate\\\":{\\\"namespace\\\":\\\"http://www.arkivverket.no/standarder/noark5/arkivstruktur/\\\",\\\"localName\\\":\\\"journalpoststatus\\\",\\\"hashCode\\\":-1646451064},\\\"severity\\\":{\\\"iriString\\\":\\\"http://www.w3.org/ns/shacl#Violation\\\",\\\"localNameIdx\\\":-1}}\",\"focusNode\":\"http://example.org/1\",\"message\":\"Object is a literal, expected IRI.\",\"object\":\"utfort\",\"predicate\":\"arkiv:journalpoststatus\",\"severity\":\"sh:Violation\",\"subject\":\"http://example.org/1\"}".replaceAll("\\{\"id\":(.*?),",""),
+                    jsonElement.toString().replaceAll("\\{\"id\":(.*?),","")
                 );
 
                 System.out.println(jsonElement);
