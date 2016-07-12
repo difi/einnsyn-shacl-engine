@@ -98,8 +98,12 @@ public class SHACLValidator {
 
     public boolean validate(Repository data, ConstraintViolationHandler constraintViolationHandler, StrictModeStatementHandler strictModeStatementHandler) {
 
-        if (shapes == null || data == null) {
-            return false;
+        if (shapes == null) {
+            throw new NullPointerException("Shapes repository was null");
+        }
+
+        if (data == null) {
+            throw new NullPointerException("Data repository was null");
         }
 
         Repository originalData = data;
