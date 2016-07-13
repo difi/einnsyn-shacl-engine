@@ -87,7 +87,7 @@ public class SHACLValidatorTest {
 
     @Test
     public void exactCountTest() throws IOException {
-        String dir = "testdata/exactCount";
+        String dir = "testData/exactCount";
 
         SHACLValidator shaclValidator = new SHACLValidator(getShacl(dir), null);
 
