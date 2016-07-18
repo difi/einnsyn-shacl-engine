@@ -2,6 +2,7 @@ package no.difi.einnsyn.shacl_engine.rules.propertyconstraints;
 
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.sesameutils.SesameUtils;
+import no.difi.einnsyn.shacl_engine.rules.Shape;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationDatatype;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
 import org.openrdf.model.IRI;
@@ -24,8 +25,8 @@ public class DatatypeConstraint extends MinMaxConstraint {
 
     private final IRI datatype;
 
-    public DatatypeConstraint(Resource object, RepositoryConnection shapes, boolean strictMode) {
-        super(object, shapes, strictMode);
+    public DatatypeConstraint(Resource object, RepositoryConnection shapes, boolean strictMode, Shape shape) {
+        super(object, shapes, strictMode, shape);
 
         this.datatype = SesameUtils.getExactlyOneIri(shapes, object, SHACL.datatype);
     }

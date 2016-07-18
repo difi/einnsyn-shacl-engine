@@ -3,6 +3,7 @@ package no.difi.einnsyn.shacl_engine.rules.propertyconstraints;
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.sesameutils.SesameUtils;
 import no.difi.einnsyn.shacl_engine.rules.PropertyConstraint;
+import no.difi.einnsyn.shacl_engine.rules.Shape;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationExactCount;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationMaxCount;
@@ -28,8 +29,8 @@ public class MinMaxConstraint extends PropertyConstraint {
     protected final Optional<Integer> maxCount;
     private long count;
 
-    public MinMaxConstraint(Resource object, RepositoryConnection shapes, boolean strictMode) {
-        super(object, shapes, strictMode);
+    public MinMaxConstraint(Resource object, RepositoryConnection shapes, boolean strictMode, Shape shape) {
+        super(object, shapes, strictMode, shape);
 
         this.minCount = SesameUtils.getOptionalOneInteger(shapes, object, SHACL.minCount);
         this.maxCount = SesameUtils.getOptionalOneInteger(shapes, object, SHACL.maxCount);

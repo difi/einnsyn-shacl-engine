@@ -49,6 +49,7 @@ public class ConstraintViolation {
 
         // TODO: Find a better namespace and ID.
         validationResultsIri = factory.createIRI("http://example.org/", UUID.randomUUID().toString());
+
     }
 
     /**
@@ -71,7 +72,10 @@ public class ConstraintViolation {
 
         Literal messageLiteral = factory.createLiteral(message);
         statements.add(factory.createStatement(validationResultsIri, SHACL.message, messageLiteral));
-        statements.add(factory.createStatement(validationResultsIri, RDFS.COMMENT, factory.createLiteral(new GsonBuilder().create().toJson(propertyConstraint))));
+
+        statements.add(factory.createStatement(validationResultsIri, SHACL.sourceConstraint, propertyConstraint.getId()));
+        statements.add(factory.createStatement(validationResultsIri, SHACL.scopeClass, propertyConstraint.getShape().getScopeClass()));
+
 
         return statements;
     }

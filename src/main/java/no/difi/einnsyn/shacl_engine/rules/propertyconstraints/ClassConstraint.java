@@ -3,6 +3,7 @@ package no.difi.einnsyn.shacl_engine.rules.propertyconstraints;
 import info.aduna.iteration.Iterations;
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.sesameutils.SesameUtils;
+import no.difi.einnsyn.shacl_engine.rules.Shape;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationClass;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
 import org.openrdf.model.IRI;
@@ -25,8 +26,8 @@ public class ClassConstraint extends MinMaxConstraint {
 
     private final IRI class_property;
 
-    public ClassConstraint(Resource object, RepositoryConnection shapes, boolean strictMode) {
-        super(object, shapes, strictMode);
+    public ClassConstraint(Resource object, RepositoryConnection shapes, boolean strictMode, Shape shape) {
+        super(object, shapes, strictMode, shape);
 
         this.class_property = SesameUtils.getExactlyOneIri(shapes, object, SHACL.class_property);
     }

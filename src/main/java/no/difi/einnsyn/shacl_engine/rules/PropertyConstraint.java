@@ -27,14 +27,18 @@ public abstract class PropertyConstraint {
 
     protected final boolean strictMode;
     protected final IRI predicate;
-    protected IRI severity = SHACL.Violation;
+    IRI severity = SHACL.Violation;
+    Resource id;
+    Shape shape;
 
-    protected PropertyConstraint(Resource subject, RepositoryConnection shapesConnection, boolean strictMode) {
+    protected PropertyConstraint(Resource subject, RepositoryConnection shapesConnection, boolean strictMode, Shape shape) {
         this.strictMode = strictMode;
         predicate = SesameUtils.getExactlyOneIri(shapesConnection, subject, SHACL.predicate);
         if(shapesConnection.hasStatement(subject, SHACL.severity, null, true)){
             this.severity = SesameUtils.getExactlyOneIri(shapesConnection, subject, SHACL.severity);
         }
+        id = subject;
+        this.shape = shape;
     }
 
     protected abstract void validate(Resource resource, List<Statement> list,
@@ -49,26 +53,34 @@ public abstract class PropertyConstraint {
         return this.severity;
     }
 
+    public Resource getId() {
+        return id;
+    }
+
+    public Shape getShape() {
+        return shape;
+    }
+
     static class Factory {
 
-        static PropertyConstraint create(Resource object, RepositoryConnection shapesConnection, boolean strictMode) {
+        static PropertyConstraint create(Resource object, RepositoryConnection shapesConnection, boolean strictMode, Shape shape) {
 
             if (shapesConnection.hasStatement(object, SHACL.class_property, null, true)) {
-                return new ClassConstraint(object, shapesConnection, strictMode);
+                return new ClassConstraint(object, shapesConnection, strictMode, shape);
             }
 
             if (shapesConnection.hasStatement(object, SHACL.datatype, null, true)) {
-                return new DatatypeConstraint(object, shapesConnection, strictMode);
+                return new DatatypeConstraint(object, shapesConnection, strictMode, shape);
             }
 
             if (shapesConnection.hasStatement(object, SHACL.classIn, null, true)) {
-                return new ClassInConstraint(object, shapesConnection, strictMode);
+                return new ClassInConstraint(object, shapesConnection, strictMode, shape);
             }
 
             if (shapesConnection.hasStatement(object, SHACL.minCount, null, true) ||
                 shapesConnection.hasStatement(object, SHACL.maxCount, null, true)) {
 
-                return new MinMaxConstraint(object, shapesConnection, strictMode);
+                return new MinMaxConstraint(object, shapesConnection, strictMode, shape);
             }
 
             // Throw exception for unhandled contraints.

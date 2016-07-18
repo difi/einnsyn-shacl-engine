@@ -32,9 +32,13 @@ public class Shape {
         RepositoryResult<Statement> statements = shapesConnection.getStatements(subject, SHACL.property, null);
 
         Iterations.stream(statements)
-            .map(statement -> PropertyConstraint.Factory.create((Resource) statement.getObject(), shapesConnection, strictMode))
+            .map(statement -> PropertyConstraint.Factory.create((Resource) statement.getObject(), shapesConnection, strictMode, this))
             .forEach(properties::add);
 
+    }
+
+    public Resource getScopeClass() {
+        return scopeClass;
     }
 
     private class TempStatementsAndResource {
