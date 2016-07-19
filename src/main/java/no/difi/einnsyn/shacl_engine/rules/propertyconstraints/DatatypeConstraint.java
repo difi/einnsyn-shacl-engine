@@ -12,6 +12,10 @@ import org.openrdf.model.impl.SimpleLiteral;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.repository.RepositoryConnection;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 /**
@@ -65,15 +69,42 @@ public class DatatypeConstraint extends MinMaxConstraint {
             ));
 
 
+        // parse datetime
+        list.stream()
+            .filter(statement -> statement.getPredicate().equals(predicate))
+            .filter(statement -> statement.getObject() instanceof SimpleLiteral)
+            .filter(statement -> datatype.equals(XMLSchema.DATETIME))
+            .filter(statement -> {
+                try{
+                    LocalDateTime.parse(statement.getObject().stringValue(), DateTimeFormatter.ISO_DATE_TIME);
+                }catch (DateTimeParseException e){
+                    return true;
+                }
+                return false;
+            })
+            .forEach(statement -> constraintViolationHandler.handle(
+                new ConstraintViolationDatatype(this, resource, statement.getObject().stringValue()+" could not be parsed as xsd:dateTime",
+                    statement, ((SimpleLiteral) statement.getObject()).getDatatype())
+            ));
+
+        // parse date
         list.stream()
             .filter(statement -> statement.getPredicate().equals(predicate))
             .filter(statement -> statement.getObject() instanceof SimpleLiteral)
             .filter(statement -> datatype.equals(XMLSchema.DATE))
-            .filter(statement -> statement.getObject().stringValue().contains("T"))
+            .filter(statement -> {
+                try{
+                    LocalDate.parse(statement.getObject().stringValue(), DateTimeFormatter.ISO_DATE);
+                }catch (DateTimeParseException e){
+                    return true;
+                }
+                return false;
+            })
             .forEach(statement -> constraintViolationHandler.handle(
-                new ConstraintViolationDatatype(this, resource, "Datetime found in xsd:date field",
+                new ConstraintViolationDatatype(this, resource, statement.getObject().stringValue()+" could not be parsed as xsd:date",
                     statement, ((SimpleLiteral) statement.getObject()).getDatatype())
             ));
+
     }
 
     @Override

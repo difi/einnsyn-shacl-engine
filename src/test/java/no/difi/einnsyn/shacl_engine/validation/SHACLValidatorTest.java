@@ -220,7 +220,7 @@ public class SHACLValidatorTest {
                 JsonObject asJsonObject = jsonElement.getAsJsonObject();
 
                 String message = asJsonObject.get("message").getAsString();
-                assertEquals("", "Datetime found in xsd:date field", message);
+                assertEquals("", "2014-11-21T15:13:35.749+01:00 could not be parsed as xsd:date", message);
 
 
                 System.out.println(jsonElement);
