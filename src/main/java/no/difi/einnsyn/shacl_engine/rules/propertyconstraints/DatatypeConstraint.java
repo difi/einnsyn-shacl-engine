@@ -21,9 +21,8 @@ import java.util.List;
 /**
  * Checks that the datatype of o in s --p--> o is a literal and has the datatype
  * specified in the SHACL constraint for the specified predicat (p)
- *
+ * <p>
  * https://www.w3.org/TR/shacl/#AbstractDatatypePropertyConstraint
- *
  */
 public class DatatypeConstraint extends MinMaxConstraint {
 
@@ -70,40 +69,45 @@ public class DatatypeConstraint extends MinMaxConstraint {
 
 
         // parse datetime
-        list.stream()
-            .filter(statement -> statement.getPredicate().equals(predicate))
-            .filter(statement -> statement.getObject() instanceof SimpleLiteral)
-            .filter(statement -> datatype.equals(XMLSchema.DATETIME))
-            .filter(statement -> {
-                try{
-                    LocalDateTime.parse(statement.getObject().stringValue(), DateTimeFormatter.ISO_DATE_TIME);
-                }catch (DateTimeParseException e){
-                    return true;
-                }
-                return false;
-            })
-            .forEach(statement -> constraintViolationHandler.handle(
-                new ConstraintViolationDatatype(this, resource, statement.getObject().stringValue()+" could not be parsed as xsd:dateTime",
-                    statement, ((SimpleLiteral) statement.getObject()).getDatatype())
-            ));
+        if (datatype.equals(XMLSchema.DATETIME)) {
+            list.stream()
+                .filter(statement -> statement.getPredicate().equals(predicate))
+                .filter(statement -> statement.getObject() instanceof SimpleLiteral)
+                .filter(statement -> {
+                    try {
+                        LocalDateTime.parse(statement.getObject().stringValue(), DateTimeFormatter.ISO_DATE_TIME);
+                    } catch (DateTimeParseException e) {
+                        return true;
+                    }
+                    return false;
+                })
+                .forEach(statement -> constraintViolationHandler.handle(
+                    new ConstraintViolationDatatype(this, resource, statement.getObject().stringValue() + " could not be parsed as xsd:dateTime",
+                        statement, ((SimpleLiteral) statement.getObject()).getDatatype())
+                ));
+        }
 
-        // parse date
-        list.stream()
-            .filter(statement -> statement.getPredicate().equals(predicate))
-            .filter(statement -> statement.getObject() instanceof SimpleLiteral)
-            .filter(statement -> datatype.equals(XMLSchema.DATE))
-            .filter(statement -> {
-                try{
-                    LocalDate.parse(statement.getObject().stringValue(), DateTimeFormatter.ISO_DATE);
-                }catch (DateTimeParseException e){
-                    return true;
-                }
-                return false;
-            })
-            .forEach(statement -> constraintViolationHandler.handle(
-                new ConstraintViolationDatatype(this, resource, statement.getObject().stringValue()+" could not be parsed as xsd:date",
-                    statement, ((SimpleLiteral) statement.getObject()).getDatatype())
-            ));
+
+        if (datatype.equals(XMLSchema.DATE)) {
+
+
+            // parse date
+            list.stream()
+                .filter(statement -> statement.getPredicate().equals(predicate))
+                .filter(statement -> statement.getObject() instanceof SimpleLiteral)
+                .filter(statement -> {
+                    try {
+                        LocalDate.parse(statement.getObject().stringValue(), DateTimeFormatter.ISO_DATE);
+                    } catch (DateTimeParseException e) {
+                        return true;
+                    }
+                    return false;
+                })
+                .forEach(statement -> constraintViolationHandler.handle(
+                    new ConstraintViolationDatatype(this, resource, statement.getObject().stringValue() + " could not be parsed as xsd:date",
+                        statement, ((SimpleLiteral) statement.getObject()).getDatatype())
+                ));
+        }
 
     }
 
