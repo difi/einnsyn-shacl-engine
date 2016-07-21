@@ -13,6 +13,7 @@ import org.openrdf.sail.memory.model.MemStatement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 /**
@@ -27,7 +28,13 @@ public class Shape {
 
     public Shape(Resource subject, RepositoryConnection shapesConnection, boolean strictMode) {
         this.strictMode = strictMode;
-        scopeClass = (Resource) shapesConnection.getStatements(subject, SHACL.scopeClass, null).next().getObject();
+
+        try{
+            scopeClass = (Resource) shapesConnection.getStatements(subject, SHACL.scopeClass, null).next().getObject();
+
+        }catch (NoSuchElementException e){
+            scopeClass = null;
+        }
 
         RepositoryResult<Statement> statements = shapesConnection.getStatements(subject, SHACL.property, null);
 
