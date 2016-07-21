@@ -24,6 +24,8 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
 import org.openrdf.sail.memory.MemoryStore;
 import org.openrdf.sail.memory.model.MemStatement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
@@ -42,6 +44,9 @@ public class SHACLValidator {
     private boolean strictMode;
     List<Shape> shapes;
     private Repository ontology;
+
+    private static Logger logger = LoggerFactory.getLogger(SHACLValidator.class);
+
 
     public SHACLValidator(Repository shaclRules, Repository ontology, boolean strictMode) {
 
@@ -109,13 +114,15 @@ public class SHACLValidator {
         Repository originalData = data;
 
         if (ontology != null) {
-            //data = addInferencing(data, ontology);
-            data = addInferencingUsingJena(data, ontology);
+            logger.info("Inferencing");
+            data = addInferencing(data, ontology);
+            //data = addInferencingUsingJena(data, ontology);
         }
 
         final boolean[] failed = {false};
 
         try (RepositoryConnection dataConnection = data.getConnection()) {
+            logger.info("Validating");
 
             shapes.stream()
                 .forEach(shape -> shape.validate(dataConnection, (violation) -> {
@@ -127,6 +134,7 @@ public class SHACLValidator {
 
 
             if (strictMode) {
+                logger.info("Handle strict mode");
                 try (RepositoryConnection originalDataConnection = originalData.getConnection();) {
 
                     /* Extract all triples that have not been validated
@@ -145,16 +153,17 @@ public class SHACLValidator {
 
 
                     // start by iterating over all the triples in the incoming data
-                    Iterations.stream(originalDataConnection.getStatements(null, null, null))
+                    Iterations.stream(dataConnection.getStatements(null, null, null, false))
 
-                        // get hold of the validated triple that matches the one from the incoming data
-                        .map(statement -> {
-                            RepositoryResult<Statement> matchingStatementFromValidatedRepository = dataConnection.getStatements(statement.getSubject(), statement.getPredicate(), statement.getObject());
-                            boolean statementExistsInValidatedData = matchingStatementFromValidatedRepository.hasNext();
-
-                            // return the validated triple, or if it does not exist, then the original triple
-                            return statementExistsInValidatedData ? matchingStatementFromValidatedRepository.next() : statement;
-                        })
+//
+//                        // get hold of the validated triple that matches the one from the incoming data
+//                        .map(statement -> {
+//                            RepositoryResult<Statement> matchingStatementFromValidatedRepository = dataConnection.getStatements(statement.getSubject(), statement.getPredicate(), statement.getObject());
+//                            boolean statementExistsInValidatedData = matchingStatementFromValidatedRepository.hasNext();
+//
+//                            // return the validated triple, or if it does not exist, then the original triple
+//                            return statementExistsInValidatedData ? matchingStatementFromValidatedRepository.next() : statement;
+//                        })
 
                         //.filter(statement -> statement instanceof MemStatement) commented out  because crashes are preferable to someone accidentally using strict mode without an in memory repository
 
@@ -226,9 +235,25 @@ public class SHACLValidator {
 
             try (RepositoryConnection ontologyConnection = ontology.getConnection()) {
                 ontologyConnection.begin(IsolationLevels.READ_UNCOMMITTED);
-
                 inferencedConnection.add(ontologyConnection.getStatements(null, null, null));
                 ontologyConnection.commit();
+
+
+            }
+
+            inferencedConnection.commit();
+
+            inferencedConnection.begin(IsolationLevels.READ_UNCOMMITTED);
+            try (RepositoryConnection ontologyConnection = ontology.getConnection()) {
+
+                ontologyConnection.begin(IsolationLevels.READ_UNCOMMITTED);
+                RepositoryResult<Statement> statements = ontologyConnection.getStatements(null, null, null);
+                while (statements.hasNext()) {
+                    Statement next = statements.next();
+                    (((MemStatement) inferencedConnection.getStatements(next.getSubject(), next.getPredicate(), next.getObject()).next())).setTillSnapshot(Integer.MAX_VALUE - 1);
+                }
+                ontologyConnection.commit();
+
             }
 
             inferencedConnection.commit();
