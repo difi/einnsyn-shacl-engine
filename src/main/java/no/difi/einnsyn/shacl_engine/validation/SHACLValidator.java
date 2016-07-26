@@ -58,7 +58,9 @@ public class SHACLValidator {
         try (RepositoryConnection shapesConnection = shaclRules.getConnection()) {
             RepositoryResult<Statement> statements = shapesConnection.getStatements(null, RDF.TYPE, SHACL.Shape);
 
-            shapes = QueryResults.stream(statements)
+            shapes = QueryResults
+                .stream(statements)
+                .parallel()
                 .map(statement -> new Shape(statement.getSubject(), shapesConnection, strictMode))
                 .collect(Collectors.toList());
         }
