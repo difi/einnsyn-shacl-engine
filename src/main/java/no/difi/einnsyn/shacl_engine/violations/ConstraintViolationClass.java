@@ -5,6 +5,7 @@ import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.ClassConstraint;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
+import org.openrdf.model.Value;
 import org.openrdf.model.vocabulary.RDF;
 
 import java.util.List;
@@ -19,16 +20,17 @@ import java.util.List;
  */
 public class ConstraintViolationClass extends ConstraintViolationWithStatement {
 
+    private final List<Value> actualStatements;
     private IRI class_property;
-    private Statement failingStatement;
 
-    public ConstraintViolationClass(ClassConstraint propertyConstraint, Resource resource, String message, Statement failingStatement, List<Statement> actualStatements) {
+    public ConstraintViolationClass(ClassConstraint propertyConstraint, Resource resource, String message, Statement failingStatement, List<Value> actualStatements) {
         super(propertyConstraint, resource, message, failingStatement);
 
         if (propertyConstraint.getClassProperty() != null) {
             this.class_property = propertyConstraint.getClassProperty();
         }
-        this.failingStatement = failingStatement;
+
+        this.actualStatements = actualStatements;
     }
 
     /**
@@ -40,8 +42,12 @@ public class ConstraintViolationClass extends ConstraintViolationWithStatement {
         List<Statement> statements = super.validationResults();
 
         statements.add(factory.createStatement(validationResultsIri, SHACLExt.expected, factory.createLiteral(class_property.toString())));
-        statements.add(factory.createStatement(validationResultsIri, SHACLExt.actual, failingStatement.getObject()));
         statements.add(factory.createStatement(validationResultsIri, RDF.TYPE, SHACLExt.ConstraintViolationClass));
+
+        actualStatements.forEach(actual -> {
+            statements.add(factory.createStatement(validationResultsIri, SHACLExt.actual, actual));
+
+        });
 
         return statements;
     }

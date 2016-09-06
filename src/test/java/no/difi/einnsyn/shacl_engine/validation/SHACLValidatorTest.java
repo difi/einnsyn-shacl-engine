@@ -163,7 +163,6 @@ public class SHACLValidatorTest {
                 JsonObject asJsonObject = jsonElement.getAsJsonObject();
 
                 assertEquals("", "utfort", asJsonObject.get("object").getAsString());
-                assertEquals("", "utfort", asJsonObject.get("actual").getAsString());
                 assertEquals("", Arkiv.Journalpoststatus.toString(), asJsonObject.get("expected").getAsString());
 
                 String message = asJsonObject.get("message").getAsString();
