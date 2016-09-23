@@ -1,12 +1,9 @@
 package no.difi.einnsyn.shacl_engine.rules.propertyconstraints;
 
-import com.google.common.collect.Lists;
-import info.aduna.iteration.Iterations;
-import no.difi.einnsyn.SHACL;
-import no.difi.einnsyn.sesameutils.SesameUtils;
-import no.difi.einnsyn.shacl_engine.rules.Shape;
-import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationClass;
-import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -14,11 +11,12 @@ import org.openrdf.model.Value;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryConnection;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import info.aduna.iteration.Iterations;
+import no.difi.einnsyn.SHACL;
+import no.difi.einnsyn.sesameutils.SesameUtils;
+import no.difi.einnsyn.shacl_engine.rules.Shape;
+import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationClass;
+import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
 
 /**
  * Checks that the o in s --p--> o is an instance of the class specified in the SHACL
