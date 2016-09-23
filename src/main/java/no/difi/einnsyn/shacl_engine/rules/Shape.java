@@ -1,9 +1,10 @@
 package no.difi.einnsyn.shacl_engine.rules;
 
-import info.aduna.iteration.Iterations;
-import no.difi.einnsyn.SHACL;
-import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
-import org.openrdf.model.IRI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.vocabulary.RDF;
@@ -11,10 +12,9 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.sail.memory.model.MemStatement;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
+import info.aduna.iteration.Iterations;
+import no.difi.einnsyn.SHACL;
+import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
 
 /**
  * Created by havardottestad on 04/05/16.
