@@ -60,7 +60,6 @@ public class SHACLValidator {
 
             shapes = QueryResults
                 .stream(statements)
-                .parallel()
                 .map(statement -> new Shape(statement.getSubject(), shapesConnection, strictMode))
                 .collect(Collectors.toList());
         }
