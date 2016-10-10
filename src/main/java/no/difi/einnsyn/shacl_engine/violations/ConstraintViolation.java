@@ -82,7 +82,6 @@ public class ConstraintViolation {
             statements.add(factory.createStatement(validationResultsIri, SHACL.scopeClass, propertyConstraint.getShape().getScopeClass()));
         }
 
-
         return statements;
     }
 
