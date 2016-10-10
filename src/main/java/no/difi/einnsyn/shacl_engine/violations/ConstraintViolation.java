@@ -77,7 +77,10 @@ public class ConstraintViolation {
         statements.add(factory.createStatement(validationResultsIri, SHACL.message, messageLiteral));
 
         statements.add(factory.createStatement(validationResultsIri, SHACL.sourceConstraint, propertyConstraint.getId()));
-        statements.add(factory.createStatement(validationResultsIri, SHACL.scopeClass, propertyConstraint.getShape().getScopeClass()));
+
+        if(propertyConstraint.getShape().getScopeClass() != null){
+            statements.add(factory.createStatement(validationResultsIri, SHACL.scopeClass, propertyConstraint.getShape().getScopeClass()));
+        }
 
 
         return statements;

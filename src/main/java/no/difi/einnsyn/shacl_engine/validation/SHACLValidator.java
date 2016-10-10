@@ -16,6 +16,9 @@ import org.openrdf.IsolationLevels;
 import org.openrdf.model.Statement;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.query.QueryResults;
+import org.openrdf.query.TupleQueryResult;
+import org.openrdf.query.TupleQueryResultHandler;
+import org.openrdf.query.resultio.QueryResultFormat;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryResult;
@@ -223,6 +226,7 @@ public class SHACLValidator {
         MemoryStore baseSail = new MemoryStore();
         Repository inferencedRepository = new SailRepository(new ForwardChainingRDFSInferencer(baseSail));
         inferencedRepository.initialize();
+
 
 
         try (RepositoryConnection inferencedConnection = inferencedRepository.getConnection()) {
