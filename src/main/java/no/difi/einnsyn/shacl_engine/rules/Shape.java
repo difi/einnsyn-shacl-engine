@@ -67,6 +67,7 @@ public class Shape {
         RepositoryResult<Statement> statements = dataConnection.getStatements(null, RDF.TYPE, scopeClass, true);
 
         Iterations.stream(statements)
+                        
             .peek(
                 statement -> {
                     if (strictMode && statement instanceof MemStatement) {
@@ -79,6 +80,7 @@ public class Shape {
                     statement.getSubject(),
                     Iterations
                         .stream(dataConnection.getStatements(statement.getSubject(), null, null, true))
+                    	.filter(statement2 -> statement2.getContext() == null)
                         .collect(Collectors.toList())
                 )
             )

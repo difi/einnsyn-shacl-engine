@@ -1,11 +1,11 @@
 package no.difi.einnsyn.shacl_engine.validation;
 
-import info.aduna.iteration.Iterations;
-import no.difi.einnsyn.SHACL;
-import no.difi.einnsyn.sesameutils.SesameUtils;
-import no.difi.einnsyn.shacl_engine.rules.Shape;
-import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
-import no.difi.einnsyn.shacl_engine.violations.StrictModeStatementHandler;
+import java.io.ByteArrayInputStream;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -13,7 +13,13 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.reasoner.Reasoner;
 import org.apache.jena.reasoner.ReasonerRegistry;
 import org.openrdf.IsolationLevels;
+import org.openrdf.model.BNode;
+import org.openrdf.model.IRI;
+import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
+import org.openrdf.model.Value;
+import org.openrdf.model.ValueFactory;
+import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.query.QueryResults;
 import org.openrdf.query.TupleQueryResult;
@@ -30,10 +36,13 @@ import org.openrdf.sail.memory.model.MemStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.StringWriter;
-import java.util.List;
-import java.util.stream.Collectors;
+import info.aduna.iteration.Iterations;
+import no.difi.einnsyn.Arkiv;
+import no.difi.einnsyn.SHACL;
+import no.difi.einnsyn.sesameutils.SesameUtils;
+import no.difi.einnsyn.shacl_engine.rules.Shape;
+import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
+import no.difi.einnsyn.shacl_engine.violations.StrictModeStatementHandler;
 
 /**
  * Created by veronika on 4/28/16.
@@ -47,6 +56,8 @@ public class SHACLValidator {
     private boolean strictMode;
     List<Shape> shapes;
     private Repository ontology;
+    
+    private static final ValueFactory vf = SimpleValueFactory.getInstance();
 
     private static Logger logger = LoggerFactory.getLogger(SHACLValidator.class);
 
@@ -178,6 +189,8 @@ public class SHACLValidator {
                         // The validation methods run previously will have set tillSnapshot == Integer.MAX_VALUE -1
                         .filter(memStatement -> memStatement.getTillSnapshot() == Integer.MAX_VALUE)
 
+                        .filter(memStatement -> !Arkiv.getOntologyNamedGraph().equals(memStatement.getContext()))
+                        
                         // side effect to mark the validation as failed
                         .peek(memStatement -> failed[0] = true)
 
@@ -234,13 +247,38 @@ public class SHACLValidator {
 
             try (RepositoryConnection dataConnection = data.getConnection()) {
                 dataConnection.begin(IsolationLevels.READ_UNCOMMITTED);
-                inferencedConnection.add(dataConnection.getStatements(null, null, null));
+                
+                RepositoryResult<Statement> statements = dataConnection.getStatements(null, null, null, false);
+                
+                String uuid = UUID.randomUUID().toString();
+                
+                while (statements.hasNext()) {
+                	Statement next = statements.next(); 
+                    Resource subject = next.getSubject();
+                    IRI predicate = next.getPredicate();
+                    Value object = next.getObject();
+
+                	if (Arkiv.getOntologyNamedGraph().equals(next.getContext())) {
+                		continue;
+                	}
+
+                    if (subject instanceof BNode) {
+                        subject = vf.createBNode(((BNode) subject).getID() + "_" + uuid);
+                    }
+
+                    if (object instanceof BNode) {
+                        object = vf.createBNode(((BNode) object).getID() + "_" + uuid);
+                    }
+
+                    inferencedConnection.add(subject, predicate, object);
+                }
+                
                 dataConnection.commit();
             }
 
             try (RepositoryConnection ontologyConnection = ontology.getConnection()) {
                 ontologyConnection.begin(IsolationLevels.READ_UNCOMMITTED);
-                inferencedConnection.add(ontologyConnection.getStatements(null, null, null));
+                inferencedConnection.add(ontologyConnection.getStatements(null, null, null), Arkiv.getOntologyNamedGraph());
                 ontologyConnection.commit();
 
 
@@ -248,20 +286,20 @@ public class SHACLValidator {
 
             inferencedConnection.commit();
 
-            inferencedConnection.begin(IsolationLevels.READ_UNCOMMITTED);
-            try (RepositoryConnection ontologyConnection = ontology.getConnection()) {
-
-                ontologyConnection.begin(IsolationLevels.READ_UNCOMMITTED);
-                RepositoryResult<Statement> statements = ontologyConnection.getStatements(null, null, null);
-                while (statements.hasNext()) {
-                    Statement next = statements.next();
-                    (((MemStatement) inferencedConnection.getStatements(next.getSubject(), next.getPredicate(), next.getObject()).next())).setTillSnapshot(Integer.MAX_VALUE - 1);
-                }
-                ontologyConnection.commit();
-
-            }
-
-            inferencedConnection.commit();
+//            inferencedConnection.begin(IsolationLevels.READ_UNCOMMITTED);
+//            try (RepositoryConnection ontologyConnection = ontology.getConnection()) {
+//
+//                ontologyConnection.begin(IsolationLevels.READ_UNCOMMITTED);
+//                RepositoryResult<Statement> statements = ontologyConnection.getStatements(null, null, null);
+//                while (statements.hasNext()) {
+//                    Statement next = statements.next();
+//                    (((MemStatement) inferencedConnection.getStatements(next.getSubject(), next.getPredicate(), next.getObject()).next())).setTillSnapshot(Integer.MAX_VALUE - 1);
+//                }
+//                ontologyConnection.commit();
+//
+//            }
+//
+//            inferencedConnection.commit();
         }
 
 
