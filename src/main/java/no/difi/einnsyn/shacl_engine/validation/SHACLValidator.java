@@ -286,20 +286,6 @@ public class SHACLValidator {
 
             inferencedConnection.commit();
 
-//            inferencedConnection.begin(IsolationLevels.READ_UNCOMMITTED);
-//            try (RepositoryConnection ontologyConnection = ontology.getConnection()) {
-//
-//                ontologyConnection.begin(IsolationLevels.READ_UNCOMMITTED);
-//                RepositoryResult<Statement> statements = ontologyConnection.getStatements(null, null, null);
-//                while (statements.hasNext()) {
-//                    Statement next = statements.next();
-//                    (((MemStatement) inferencedConnection.getStatements(next.getSubject(), next.getPredicate(), next.getObject()).next())).setTillSnapshot(Integer.MAX_VALUE - 1);
-//                }
-//                ontologyConnection.commit();
-//
-//            }
-//
-//            inferencedConnection.commit();
         }
 
 
