@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import no.difi.einnsyn.Arkiv;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.vocabulary.RDF;
@@ -70,8 +71,12 @@ public class Shape {
                         
             .peek(
                 statement -> {
-                    if (strictMode && statement instanceof MemStatement) {
-                        ((MemStatement) statement).setTillSnapshot(Integer.MAX_VALUE - 1);
+                    if (strictMode && statement instanceof MemStatement && !Arkiv.getOntologyNamedGraph().equals(statement.getContext())) {
+                        MemStatement statement1 = (MemStatement) statement;
+                        if(statement1.isExplicit() && scopeClass != null){
+                            statement1.setTillSnapshot(Integer.MAX_VALUE - 1);
+                        }
+
                     }
                 }
             )
