@@ -2,10 +2,7 @@ package no.difi.einnsyn.shacl_engine.rules;
 
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.sesameutils.SesameUtils;
-import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.ClassConstraint;
-import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.ClassInConstraint;
-import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.DatatypeConstraint;
-import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.MinMaxConstraint;
+import no.difi.einnsyn.shacl_engine.rules.propertyconstraints.*;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Model;
@@ -75,6 +72,10 @@ public abstract class PropertyConstraint {
 
             if (shapesConnection.hasStatement(object, SHACL.classIn, null, true)) {
                 return new ClassInConstraint(object, shapesConnection, strictMode, shape);
+            }
+
+            if (shapesConnection.hasStatement(object, SHACL.datatypeIn, null, true)) {
+                return new DatatypeInConstraint(object, shapesConnection, strictMode, shape);
             }
 
             if (shapesConnection.hasStatement(object, SHACL.minCount, null, true) ||
