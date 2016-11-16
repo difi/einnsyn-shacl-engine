@@ -17,25 +17,6 @@
 
     <dependencies>
 
-        <!--<dependency>-->
-            <!--<groupId>com.complexible.stardog.sesame</groupId>-->
-            <!--<artifactId>stardog-sesame-core</artifactId>-->
-            <!--<version>4.1</version>-->
-            <!--<type>jar</type>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>org.openrdf.sesame</groupId>-->
-            <!--<artifactId>sesame-sail-memory</artifactId>-->
-            <!--<version>4.0.0</version>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>org.openrdf.sesame</groupId>-->
-            <!--<artifactId>sesame-repository-sail</artifactId>-->
-            <!--<version>4.0.0</version>-->
-        <!--</dependency>-->
-
         <!-- http://mvnrepository.com/artifact/org.openrdf.sesame/sesame -->
         <dependency>
             <groupId>org.openrdf.sesame</groupId>
