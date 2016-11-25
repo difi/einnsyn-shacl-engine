@@ -241,18 +241,18 @@ public class SHACLValidator {
 
     private static Repository addInferencing(Repository data, Repository ontology) {
         MemoryStore baseSail = new MemoryStore();
-        Repository inferencedRepository = new SailRepository(new ForwardChainingRDFSInferencer(baseSail));
+        Repository inferencedRepository = new SailRepository(new FastRdfsForwardChainingSail(baseSail, ontology));
 
         inferencedRepository.initialize();
 
         try (RepositoryConnection inferencedConnection = inferencedRepository.getConnection()) {
-            inferencedConnection.begin(IsolationLevels.READ_UNCOMMITTED);
-
-            try (RepositoryConnection ontologyConnection = ontology.getConnection()) {
-                inferencedConnection.add(ontologyConnection.getStatements(null, null, null), Arkiv.getOntologyNamedGraph());
-            }
-
-            inferencedConnection.commit();
+//            inferencedConnection.begin(IsolationLevels.READ_UNCOMMITTED);
+//
+//            try (RepositoryConnection ontologyConnection = ontology.getConnection()) {
+//                inferencedConnection.add(ontologyConnection.getStatements(null, null, null), Arkiv.getOntologyNamedGraph());
+//            }
+//
+//            inferencedConnection.commit();
 
             inferencedConnection.begin(IsolationLevels.READ_UNCOMMITTED);
 
@@ -280,6 +280,8 @@ public class SHACLValidator {
                     if (object instanceof BNode) {
                         object = vf.createBNode(((BNode) object).getID() + "_" + uuid);
                     }
+
+
 
                     inferencedConnection.add(subject, predicate, object);
                 }

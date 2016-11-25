@@ -17,6 +17,7 @@ import no.difi.einnsyn.sesameutils.SesameUtils;
 import no.difi.einnsyn.shacl_engine.rules.Shape;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationClass;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
+import org.openrdf.repository.RepositoryResult;
 
 /**
  * Checks that the o in s --p--> o is an instance of the class specified in the SHACL

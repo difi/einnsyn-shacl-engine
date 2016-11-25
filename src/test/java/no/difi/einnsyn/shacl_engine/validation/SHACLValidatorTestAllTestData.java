@@ -1,6 +1,7 @@
 package no.difi.einnsyn.shacl_engine.validation;
 
 import com.github.jsonldjava.core.JsonLdError;
+import no.difi.einnsyn.Arkiv;
 import no.difi.einnsyn.sesameutils.SesameUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -108,7 +109,7 @@ public class SHACLValidatorTestAllTestData {
             return null;
         }
 
-        return SesameUtils.streamToRepository(resourceAsStream, RDFFormat.TURTLE);
+        return SesameUtils.streamToRepository(resourceAsStream, RDFFormat.TURTLE, Arkiv.getOntologyNamedGraph());
     }
 
     private Repository getData(String simpleShaclViolation) throws IOException {

@@ -350,6 +350,6 @@ public class SHACLValidatorTest {
     private Repository getOntology(String simpleShaclViolation) throws IOException {
         InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(simpleShaclViolation + "/ontology.ttl");
 
-        return SesameUtils.streamToRepository(resourceAsStream, RDFFormat.TURTLE);
+        return SesameUtils.streamToRepository(resourceAsStream, RDFFormat.TURTLE, Arkiv.getOntologyNamedGraph());
     }
 }
