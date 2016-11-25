@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import no.difi.einnsyn.sesameutils.CustomSailRepository;
+import no.difi.einnsyn.sesameutils.backportedReasoner.FastRdfsForwardChainingSail;
 import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -56,7 +58,7 @@ public class SHACLValidator {
     private boolean strictMode;
     List<Shape> shapes;
     private Repository ontology;
-    
+
     private static final ValueFactory vf = SimpleValueFactory.getInstance();
 
     private static Logger logger = LoggerFactory.getLogger(SHACLValidator.class);
@@ -190,7 +192,7 @@ public class SHACLValidator {
                         .filter(memStatement -> memStatement.getTillSnapshot() == Integer.MAX_VALUE)
 
                         .filter(memStatement -> !Arkiv.getOntologyNamedGraph().equals(memStatement.getContext()))
-                        
+
                         // side effect to mark the validation as failed
                         .peek(memStatement -> failed[0] = true)
 
@@ -210,8 +212,10 @@ public class SHACLValidator {
         Model dataJena = ModelFactory.createDefaultModel();
         Model ontologyJena = ModelFactory.createDefaultModel();
 
-        dataJena.read(new ByteArrayInputStream(SesameUtils.repositoryToString(data, RDFFormat.NTRIPLES).getBytes()), "", "NTRIPLES");
-        ontologyJena.read(new ByteArrayInputStream(SesameUtils.repositoryToString(ontology, RDFFormat.NTRIPLES).getBytes()), "", "NTRIPLES");
+        dataJena.read(new ByteArrayInputStream(SesameUtils.repositoryToString(data, RDFFormat.NTRIPLES)
+            .getBytes()), "", "NTRIPLES");
+        ontologyJena.read(new ByteArrayInputStream(SesameUtils.repositoryToString(ontology, RDFFormat.NTRIPLES)
+            .getBytes()), "", "NTRIPLES");
 
         Reasoner reasoner = ReasonerRegistry.getRDFSReasoner();
 
@@ -238,29 +242,36 @@ public class SHACLValidator {
     private static Repository addInferencing(Repository data, Repository ontology) {
         MemoryStore baseSail = new MemoryStore();
         Repository inferencedRepository = new SailRepository(new ForwardChainingRDFSInferencer(baseSail));
+
         inferencedRepository.initialize();
-
-
 
         try (RepositoryConnection inferencedConnection = inferencedRepository.getConnection()) {
             inferencedConnection.begin(IsolationLevels.READ_UNCOMMITTED);
 
+            try (RepositoryConnection ontologyConnection = ontology.getConnection()) {
+                inferencedConnection.add(ontologyConnection.getStatements(null, null, null), Arkiv.getOntologyNamedGraph());
+            }
+
+            inferencedConnection.commit();
+
+            inferencedConnection.begin(IsolationLevels.READ_UNCOMMITTED);
+
             try (RepositoryConnection dataConnection = data.getConnection()) {
                 dataConnection.begin(IsolationLevels.READ_UNCOMMITTED);
-                
+
                 RepositoryResult<Statement> statements = dataConnection.getStatements(null, null, null, false);
-                
+
                 String uuid = UUID.randomUUID().toString();
-                
+
                 while (statements.hasNext()) {
-                	Statement next = statements.next(); 
+                    Statement next = statements.next();
                     Resource subject = next.getSubject();
                     IRI predicate = next.getPredicate();
                     Value object = next.getObject();
 
-                	if (Arkiv.getOntologyNamedGraph().equals(next.getContext())) {
-                		continue;
-                	}
+                    if (Arkiv.getOntologyNamedGraph().equals(next.getContext())) {
+                        continue;
+                    }
 
                     if (subject instanceof BNode) {
                         subject = vf.createBNode(((BNode) subject).getID() + "_" + uuid);
@@ -272,19 +283,13 @@ public class SHACLValidator {
 
                     inferencedConnection.add(subject, predicate, object);
                 }
-                
+
                 dataConnection.commit();
             }
 
-            try (RepositoryConnection ontologyConnection = ontology.getConnection()) {
-                ontologyConnection.begin(IsolationLevels.READ_UNCOMMITTED);
-                inferencedConnection.add(ontologyConnection.getStatements(null, null, null), Arkiv.getOntologyNamedGraph());
-                ontologyConnection.commit();
-
-
-            }
 
             inferencedConnection.commit();
+
 
         }
 

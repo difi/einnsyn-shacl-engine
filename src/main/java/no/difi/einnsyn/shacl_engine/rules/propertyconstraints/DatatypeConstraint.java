@@ -73,14 +73,29 @@ public class DatatypeConstraint extends MinMaxConstraint {
             list.stream()
                 .filter(statement -> statement.getPredicate().equals(predicate))
                 .filter(statement -> statement.getObject() instanceof SimpleLiteral)
+
                 .filter(statement -> {
+
                     try {
                         LocalDateTime.parse(statement.getObject().stringValue(), DateTimeFormatter.ISO_DATE_TIME);
                     } catch (DateTimeParseException e) {
                         return true;
                     }
-                    return false;
+
+                    String value = statement.getObject().stringValue();
+                    if(!value.contains("T")) return true;
+                    String timePart = value.split("T")[1];
+
+                    try {
+                        return !(timePart.charAt(2) == ':' && timePart.charAt(5) == ':');
+                    }catch (IndexOutOfBoundsException e){
+                        return true;
+                    }
+
                 })
+
+
+
                 .forEach(statement -> constraintViolationHandler.handle(
                     new ConstraintViolationDatatype(this, resource, statement.getObject().stringValue() + " could not be parsed as xsd:dateTime",
                         statement, ((SimpleLiteral) statement.getObject()).getDatatype())
