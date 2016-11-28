@@ -1,50 +1,29 @@
 package no.difi.einnsyn.shacl_engine.validation;
 
-import java.io.ByteArrayInputStream;
-import java.io.StringWriter;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import no.difi.einnsyn.sesameutils.CustomSailRepository;
+import info.aduna.iteration.Iterations;
+import no.difi.einnsyn.Arkiv;
+import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.sesameutils.backportedReasoner.FastRdfsForwardChainingSail;
-import org.apache.jena.rdf.model.InfModel;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.reasoner.Reasoner;
-import org.apache.jena.reasoner.ReasonerRegistry;
+import no.difi.einnsyn.shacl_engine.rules.Shape;
+import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
+import no.difi.einnsyn.shacl_engine.violations.StrictModeStatementHandler;
 import org.openrdf.IsolationLevels;
-import org.openrdf.model.BNode;
-import org.openrdf.model.IRI;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.Value;
-import org.openrdf.model.ValueFactory;
+import org.openrdf.model.*;
 import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.query.QueryResults;
-import org.openrdf.query.TupleQueryResult;
-import org.openrdf.query.TupleQueryResultHandler;
-import org.openrdf.query.resultio.QueryResultFormat;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
 import org.openrdf.sail.memory.MemoryStore;
 import org.openrdf.sail.memory.model.MemStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.aduna.iteration.Iterations;
-import no.difi.einnsyn.Arkiv;
-import no.difi.einnsyn.SHACL;
-import no.difi.einnsyn.sesameutils.SesameUtils;
-import no.difi.einnsyn.shacl_engine.rules.Shape;
-import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
-import no.difi.einnsyn.shacl_engine.violations.StrictModeStatementHandler;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Created by veronika on 4/28/16.
@@ -206,38 +185,6 @@ public class SHACLValidator {
         }
     }
 
-    private static Repository addInferencingUsingJena(Repository data, Repository ontology) {
-
-
-        Model dataJena = ModelFactory.createDefaultModel();
-        Model ontologyJena = ModelFactory.createDefaultModel();
-
-        dataJena.read(new ByteArrayInputStream(SesameUtils.repositoryToString(data, RDFFormat.NTRIPLES)
-            .getBytes()), "", "NTRIPLES");
-        ontologyJena.read(new ByteArrayInputStream(SesameUtils.repositoryToString(ontology, RDFFormat.NTRIPLES)
-            .getBytes()), "", "NTRIPLES");
-
-        Reasoner reasoner = ReasonerRegistry.getRDFSReasoner();
-
-        InfModel infModel = ModelFactory.createInfModel(reasoner, ontologyJena, dataJena);
-
-
-        Model inferenced = ModelFactory.createDefaultModel();
-
-        StmtIterator stmtIterator = infModel.listStatements();
-        while (stmtIterator.hasNext()) {
-            inferenced.add(stmtIterator.nextStatement());
-        }
-
-        StringWriter stringWriter = new StringWriter();
-        inferenced.write(stringWriter, "NTRIPLES");
-
-
-        Repository repository = SesameUtils.stringToRepository(stringWriter.toString(), RDFFormat.NTRIPLES);
-
-        return repository;
-
-    }
 
     private static Repository addInferencing(Repository data, Repository ontology) {
         MemoryStore baseSail = new MemoryStore();
@@ -280,7 +227,6 @@ public class SHACLValidator {
                     if (object instanceof BNode) {
                         object = vf.createBNode(((BNode) object).getID() + "_" + uuid);
                     }
-
 
 
                     inferencedConnection.add(subject, predicate, object);
