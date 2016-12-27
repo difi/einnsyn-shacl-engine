@@ -170,7 +170,7 @@ public class SHACLValidator {
                         // The validation methods run previously will have set tillSnapshot == Integer.MAX_VALUE -1
                         .filter(memStatement -> memStatement.getTillSnapshot() == Integer.MAX_VALUE)
 
-                        .filter(memStatement -> !Arkiv.getOntologyNamedGraph().equals(memStatement.getContext()))
+                        .filter(memStatement -> !Arkiv.ONTOLOGY_GRAPH.equals(memStatement.getContext()))
 
                         // side effect to mark the validation as failed
                         .peek(memStatement -> failed[0] = true)
@@ -196,7 +196,7 @@ public class SHACLValidator {
 //            inferencedConnection.begin(IsolationLevels.READ_UNCOMMITTED);
 //
 //            try (RepositoryConnection ontologyConnection = ontology.getConnection()) {
-//                inferencedConnection.add(ontologyConnection.getStatements(null, null, null), Arkiv.getOntologyNamedGraph());
+//                inferencedConnection.add(ontologyConnection.getStatements(null, null, null), Arkiv.ONTOLOGY_GRAPH);
 //            }
 //
 //            inferencedConnection.commit();
@@ -216,7 +216,7 @@ public class SHACLValidator {
                     IRI predicate = next.getPredicate();
                     Value object = next.getObject();
 
-                    if (Arkiv.getOntologyNamedGraph().equals(next.getContext())) {
+                    if (Arkiv.ONTOLOGY_GRAPH.equals(next.getContext())) {
                         continue;
                     }
 

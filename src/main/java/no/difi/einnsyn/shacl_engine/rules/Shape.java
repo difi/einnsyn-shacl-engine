@@ -71,7 +71,7 @@ public class Shape {
                         
             .peek(
                 statement -> {
-                    if (strictMode && statement instanceof MemStatement && !Arkiv.getOntologyNamedGraph().equals(statement.getContext())) {
+                    if (strictMode && statement instanceof MemStatement && !Arkiv.ONTOLOGY_GRAPH.equals(statement.getContext())) {
                         MemStatement statement1 = (MemStatement) statement;
                         if(statement1.isExplicit() && scopeClass != null){
                             statement1.setTillSnapshot(Integer.MAX_VALUE - 1);

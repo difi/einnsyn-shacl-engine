@@ -109,7 +109,7 @@ public class SHACLValidatorTestAllTestData {
             return null;
         }
 
-        return SesameUtils.streamToRepository(resourceAsStream, RDFFormat.TURTLE, Arkiv.getOntologyNamedGraph());
+        return SesameUtils.streamToRepository(resourceAsStream, RDFFormat.TURTLE, Arkiv.ONTOLOGY_GRAPH);
     }
 
     private Repository getData(String simpleShaclViolation) throws IOException {
