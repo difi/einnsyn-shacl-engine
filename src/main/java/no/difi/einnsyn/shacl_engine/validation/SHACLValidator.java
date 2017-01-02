@@ -8,7 +8,12 @@ import no.difi.einnsyn.shacl_engine.rules.Shape;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
 import no.difi.einnsyn.shacl_engine.violations.StrictModeStatementHandler;
 import org.openrdf.IsolationLevels;
-import org.openrdf.model.*;
+import org.openrdf.model.BNode;
+import org.openrdf.model.IRI;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+import org.openrdf.model.Value;
+import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.query.QueryResults;
@@ -120,7 +125,7 @@ public class SHACLValidator {
         try (RepositoryConnection dataConnection = data.getConnection()) {
             logger.info("Validating");
 
-            shapes.stream()
+            shapes
                 .forEach(shape -> shape.validate(dataConnection, (violation) -> {
                     if (violation.getSeverity().equals(SHACL.Violation)) {
                         failed[0] = true;
@@ -131,58 +136,30 @@ public class SHACLValidator {
 
             if (strictMode) {
                 logger.info("Handle strict mode");
-                try (RepositoryConnection originalDataConnection = originalData.getConnection();) {
 
-                    /* Extract all triples that have not been validated
-                    * these are triples where there is no rule that matches
-                    * possible due to a misspelled predicate, or more malicious intent like introducing a new status
-                    *
-                    * The general approach is that there are two sets of data
-                    *   originalDataConnection contains the data that should have been validated
-                    *   dataConnection contains the data that was validated
-                    *
-                    * In dataConnection, the data that was acutally validated has been marked by setting the tillSnapshot to Integer.MAX_VALUE -1
-                     *
-                     * To find the triples that did not get checked by a SHACL rule we have to take every triple in originalDataConnection
-                     * and check that it either does not exist in dataConnection, or that it exists as a statement in dataConnection with tillSnapshot == Integer.MAX_VALUE
-                    */
+                // start by iterating over all the triples in the incoming data
+                Iterations.stream(dataConnection.getStatements(null, null, null, false))
 
+                    // cast to MemStatement
+                    .map(statement -> ((MemStatement) statement))
 
-                    // start by iterating over all the triples in the incoming data
-                    Iterations.stream(dataConnection.getStatements(null, null, null, false))
+                    // Abuse till snapshot for marking which triples have been validated.
+                    // The validation methods run previously will have set tillSnapshot == Integer.MAX_VALUE -1
+                    .filter(memStatement -> memStatement.getTillSnapshot() == Integer.MAX_VALUE)
 
-//
-//                        // get hold of the validated triple that matches the one from the incoming data
-//                        .map(statement -> {
-//                            RepositoryResult<Statement> matchingStatementFromValidatedRepository = dataConnection.getStatements(statement.getSubject(), statement.getPredicate(), statement.getObject());
-//                            boolean statementExistsInValidatedData = matchingStatementFromValidatedRepository.hasNext();
-//
-//                            // return the validated triple, or if it does not exist, then the original triple
-//                            return statementExistsInValidatedData ? matchingStatementFromValidatedRepository.next() : statement;
-//                        })
+                    .filter(memStatement -> !Arkiv.ONTOLOGY_GRAPH.equals(memStatement.getContext()))
 
-                        //.filter(statement -> statement instanceof MemStatement) commented out  because crashes are preferable to someone accidentally using strict mode without an in memory repository
+                    // side effect to mark the validation as failed
+                    .peek(memStatement -> failed[0] = true)
 
-                        // cast to MemStatement
-                        .map(statement -> ((MemStatement) statement))
+                    // notify the statement handler of the statements that caused the validation to fail
+                    .forEach(strictModeStatementHandler::handle);
 
-                        // Abuse till snapshot for marking which triples have been validated.
-                        // The validation methods run previously will have set tillSnapshot == Integer.MAX_VALUE -1
-                        .filter(memStatement -> memStatement.getTillSnapshot() == Integer.MAX_VALUE)
-
-                        .filter(memStatement -> !Arkiv.ONTOLOGY_GRAPH.equals(memStatement.getContext()))
-
-                        // side effect to mark the validation as failed
-                        .peek(memStatement -> failed[0] = true)
-
-                        // notify the statement handler of the statements that caused the validation to fail
-                        .forEach(strictModeStatementHandler::handle);
-
-                }
             }
-
-            return !failed[0];
         }
+
+        return !failed[0];
+
     }
 
 
@@ -193,13 +170,6 @@ public class SHACLValidator {
         inferencedRepository.initialize();
 
         try (RepositoryConnection inferencedConnection = inferencedRepository.getConnection()) {
-//            inferencedConnection.begin(IsolationLevels.READ_UNCOMMITTED);
-//
-//            try (RepositoryConnection ontologyConnection = ontology.getConnection()) {
-//                inferencedConnection.add(ontologyConnection.getStatements(null, null, null), Arkiv.ONTOLOGY_GRAPH);
-//            }
-//
-//            inferencedConnection.commit();
 
             inferencedConnection.begin(IsolationLevels.READ_UNCOMMITTED);
 
