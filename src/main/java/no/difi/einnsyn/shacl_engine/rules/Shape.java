@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import no.difi.einnsyn.Arkiv;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.vocabulary.RDF;
@@ -16,6 +15,8 @@ import org.openrdf.sail.memory.model.MemStatement;
 import info.aduna.iteration.Iterations;
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.shacl_engine.violations.ConstraintViolationHandler;
+
+import static no.difi.einnsyn.stardogConstants.StardogConstants.*;
 
 /**
  * Created by havardottestad on 04/05/16.
@@ -71,7 +72,7 @@ public class Shape {
                         
             .peek(
                 statement -> {
-                    if (strictMode && statement instanceof MemStatement && !Arkiv.ONTOLOGY_GRAPH.equals(statement.getContext())) {
+                    if (strictMode && statement instanceof MemStatement && !ONTOLOGY_GRAPH.equals(statement.getContext())) {
                         MemStatement statement1 = (MemStatement) statement;
                         if(statement1.isExplicit() && scopeClass != null){
                             statement1.setTillSnapshot(Integer.MAX_VALUE - 1);

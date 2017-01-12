@@ -1,7 +1,6 @@
 package no.difi.einnsyn.shacl_engine.validation;
 
 import com.github.jsonldjava.core.JsonLdError;
-import no.difi.einnsyn.Arkiv;
 import no.difi.einnsyn.sesameutils.SesameUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static no.difi.einnsyn.stardogConstants.StardogConstants.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -109,7 +109,7 @@ public class SHACLValidatorTestAllTestData {
             return null;
         }
 
-        return SesameUtils.streamToRepository(resourceAsStream, RDFFormat.TURTLE, Arkiv.ONTOLOGY_GRAPH);
+        return SesameUtils.streamToRepository(resourceAsStream, RDFFormat.TURTLE, ONTOLOGY_GRAPH);
     }
 
     private Repository getData(String simpleShaclViolation) throws IOException {

@@ -1,7 +1,6 @@
 package no.difi.einnsyn.shacl_engine.validation;
 
 import info.aduna.iteration.Iterations;
-import no.difi.einnsyn.Arkiv;
 import no.difi.einnsyn.SHACL;
 import no.difi.einnsyn.sesameutils.backportedReasoner.FastRdfsForwardChainingSail;
 import no.difi.einnsyn.shacl_engine.rules.Shape;
@@ -30,10 +29,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static no.difi.einnsyn.stardogConstants.StardogConstants.*;
+
 /**
- * Created by veronika on 4/28/16.
- * Modified by havardottestad.
- * <p>
  * This class is the one that gets it all going. The constructor takes in a repository of SHACL shapes and a
  * repository containing the ontology which we will apply on our data graph before validating against the SHACL shapes.
  */
@@ -147,7 +145,7 @@ public class SHACLValidator {
                     // The validation methods run previously will have set tillSnapshot == Integer.MAX_VALUE -1
                     .filter(memStatement -> memStatement.getTillSnapshot() == Integer.MAX_VALUE)
 
-                    .filter(memStatement -> !Arkiv.ONTOLOGY_GRAPH.equals(memStatement.getContext()))
+                    .filter(memStatement -> !ONTOLOGY_GRAPH.equals(memStatement.getContext()))
 
                     // side effect to mark the validation as failed
                     .peek(memStatement -> failed[0] = true)
@@ -186,7 +184,7 @@ public class SHACLValidator {
                     IRI predicate = next.getPredicate();
                     Value object = next.getObject();
 
-                    if (Arkiv.ONTOLOGY_GRAPH.equals(next.getContext())) {
+                    if (ONTOLOGY_GRAPH.equals(next.getContext())) {
                         continue;
                     }
 

@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static no.difi.einnsyn.stardogConstants.StardogConstants.*;
 import static org.junit.Assert.*;
 
 /**
@@ -350,6 +351,6 @@ public class SHACLValidatorTest {
     private Repository getOntology(String simpleShaclViolation) throws IOException {
         InputStream resourceAsStream = SHACLValidatorTest.class.getClassLoader().getResourceAsStream(simpleShaclViolation + "/ontology.ttl");
 
-        return SesameUtils.streamToRepository(resourceAsStream, RDFFormat.TURTLE, Arkiv.ONTOLOGY_GRAPH);
+        return SesameUtils.streamToRepository(resourceAsStream, RDFFormat.TURTLE, ONTOLOGY_GRAPH);
     }
 }
